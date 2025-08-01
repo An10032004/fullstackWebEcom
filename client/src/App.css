@@ -1,0 +1,1388 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+@import url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css")
+;
+body {
+    font-family: "Lato", sans-serif;
+}
+
+/* .header .editRow{
+    margin: 0;
+    padding: 0;
+}
+.header .container{
+    padding: 0;
+    margin: 0;
+} */
+ .cursor{cursor: pointer;}
+ .badge.bg-success{background: #e5f8ed !important;color:#16b858 !important}
+ 
+ .btn-sml {
+  font-size: 13px;
+  color: #000;
+ }
+ .btn-sml svg{
+  font-size: 20px;
+ }
+ .btn-blue {
+  background: #a84fa9 !important;
+  color: #fff !important;
+  text-transform: capitalize !important;
+}
+.bg-red {
+  background: #ed174a !important;
+}
+
+.text-red {
+  color: #ed174a !important;
+}
+
+.text-blue {
+  color: #53348c !important;
+}
+
+
+.btn-big {
+  font-size: 15px !important;
+  padding: 7px 30px !important;
+  min-width: auto !important;
+}
+
+.btn-round {
+  border-radius: 30px !important;
+}
+ 
+ .headerWrapper .container {
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 0 24px !important;
+}
+
+/* 2. Tùy chỉnh row để giãn đều phần tử */
+.headerWrapper .header .editRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  margin: 0;
+  padding: 0;
+}
+.bg-blue {
+    background: #b24cd1;
+}
+.headerWrapper{
+    border-bottom: 1px solid #ccc;
+}
+.headerWrapper .top-strip {
+    padding: 8px 0;
+}
+
+.headerWrapper .top-strip p {
+    color: #fff;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.headerWrapper .header {
+    width: 100%;
+    height: auto;
+
+}
+.logoWrapper {
+  max-width: 180px;
+  flex: 0 0 auto;
+}
+
+.logoWrapper img {
+  width: 50%;
+  height: auto;
+  object-fit: contain;
+}
+
+.headerWrapper .header .part2 .countryDrop {
+    width: 150;
+    height: 80px;
+    min-width: 150;
+    text-align: left;
+    justify-content: flex-start !important;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 7px !important;
+    margin-right: 100px;
+}
+
+.headerWrapper .header .part2 .countryDrop .lable {
+    font-size: 12px !important;
+    text-transform: capitalize;
+    color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.headerWrapper .header .part2 .countryDrop .name {
+    font-size: 12px !important;
+    text-transform: capitalize;
+    color: rgba(0, 0, 0, 0.8) !important;
+    font-weight: 700;
+    color: #000;
+}
+
+
+.locationModal .MuiPaper-elevation {
+  padding: 25px;
+  width: 400px;
+}
+
+.locationModal .countryList {
+  margin-bottom: 0px;
+  max-height: 400px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.locationModal .countryList li {
+  width: 100%;
+  list-style: none;
+}
+
+.locationModal .countryList li button {
+  width: 100%;
+  text-transform: capitalize !important;
+  color: #000 !important;
+  justify-content: flex-start !important;
+  padding: 15px 20px I !important;
+}
+.locationModal .countryList li button:hover,.locationModal .countryList li button.active{
+    background: #f1f1f1;
+}
+
+.locationModal .close_{
+    position: absolute;
+    top:20px;
+    right: 20px;
+    color:#000;
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+/* 1. Gọn gàng, bo tròn và vừa phải */
+.headerSearch {
+    width: 100%;
+    max-width: 800px; /* Giới hạn chiều rộng tối đa */
+    height: 48px;
+    background: #f3f4f7;
+    padding: 0 16px;
+    border-radius: 24px; /* Bo tròn 50% chiều cao */
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+/* 2. Input trong ô search */
+.headerSearch input {
+    background: transparent !important;
+    outline: none;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.8);
+    width: 100%;
+    height: 100%;
+    border: none !important;
+    padding: 0 40px 0 16px !important;
+}
+
+/* 3. Nút search icon (đặt trong cùng khung) */
+.headerSearch .btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    cursor: pointer;
+}
+
+.headerSearch .btn svg {
+    font-size: 20px;
+}
+
+header .part3 .circle {
+    align-items: center;
+    justify-content: center;
+    ;
+    min-width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    color: #000;
+}
+
+header .part3 circle svg {
+    font-size: 29px;
+}
+
+.cartTab .price {
+    font-size: 18px;
+    color: black;
+    font-weight: 600;
+}
+
+header .part3 .circle2 button {
+    background: #fff1ee;
+}
+
+header .part3 .circle2 svg {
+    color: red;
+    font-size: 25px;
+}
+
+.count {
+    position: absolute;
+    top: -6px;
+    right: -4px;
+    background: red;
+    border-radius: 50%;
+    color: #fff;
+    width: 20px;
+    height: 25px;
+}
+
+nav .navPart1 .catWrapper .sidebarsubmenu ul li {
+    position: static;
+}
+
+nav .navPart1 .catWrapper .sidebarsubmenu ul li .submenu {
+    position: absolute;
+    top: 0px;
+    left: 101%;
+    width: 250px;
+    height: 100%;
+    background: #fff; /* Assuming the white square is #fff */
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease-in-out;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+nav .navPart1 .catWrapper .sidebarsubmenu ul li:hover .submenu {
+    opacity: 1;
+    visibility: inherit;
+    left: 100%;
+    padding: 20px;
+}
+
+nav .navPart1 .catWrapper .sidebarsubmenu ul li:hover .submenu button {
+    border-radius: 0px !important;
+}
+
+nav .allCatTab {
+    background: #c06bd3;
+    padding: 10px 15px !important;
+    border-radius: 30px !important;
+}
+
+nav .allCatTab * {
+    color: #fff;
+}
+
+nav .allCatTab:hover {
+    background: #2bbef9;
+}
+
+nav .allCatTab .text {
+    font-weight: 600;
+}
+
+nav .allCatTab .icon1 svg {
+    font-size: 20px !important;padding-right: 3px;
+}
+nav .allCatTab .icon2 svg {
+    font-size: 15px !important;padding-left: 3px;
+}
+
+nav .navPart1 .catWrapper{position: relative;}
+nav .navPart1 .catWrapper .sidebarsubmenu{
+width: 100%;height: 0;opacity: 0;visibility: hidden;background: #fff;
+position: absolute;top:136%;left:0px;padding: 15px 0px;transition: all 0.2;z-index: 1000;
+}
+nav .navPart1 .catWrapper .sidebarsubmenu.open{
+    height: auto; opacity: 1;visibility: inherit;
+}
+nav .navPart1 .catWrapper .sidebarsubmenu ul{padding: 0px;}
+nav .navPart1 .catWrapper .sidebarsubmenu ul li{
+    width: 100%;list-style: none;padding:0px 15px
+}
+nav .navPart1 .catWrapper .sidebarsubmenu ul li button{
+    color: #000;width:100%;justify-content: flex-start;text-transform: capitalize;
+}
+nav .navPart1 .catWrapper .sidebarsubmenu ul li button:hover{
+    background: transparent;
+}
+
+nav .navPart2 ul {
+  margin-bottom: 0px;
+}
+
+
+nav .navPart2 ul li a{text-decoration: none;}
+nav .navPart2 ul li{padding-bottom: 15px;}
+nav .navPart2 ul li a button{
+  font-size: 17px;
+  font-weight: 700;
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.7);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  padding: 8px 13px;
+  transition: all 0.2s ease-in-out;
+  border-radius: 25px;
+}
+
+nav .navPart2 ul li a svg {
+  font-size: 20px;
+}
+
+nav .navPart2 ul li a:hover {
+  background: #f0faff;
+  color: #2bbef9;
+
+}
+nav .navPart2 ul li{position: relative;}
+nav .navPart2 ul li .submenu{position: absolute;top: 100%;left: 0;min-width: 200px;
+background: #fff;opacity: 0; visibility: hidden;transition: all 0.3s ease-in-out;z-index: 1000;}
+
+nav .navPart2 ul li .submenu a{display: block;width: 100%;}
+nav .navPart2 ul li .submenu a button{width: 100%;justify-content: flex-start !important;border-radius: 0px;text-transform: capitalize !important;
+font-weight: 1000;}
+
+nav .navPart2 ul li:hover .submenu{opacity: 1;visibility: inherit;top:100%}
+
+/* Container UL sẽ dùng Flex */
+.navPart2 .list {
+  display: flex;
+  justify-content: space-between; /* Trải đều các mục */
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* List item dùng inline block hoặc block */
+.navPart2 .list-inline-item {
+  flex: 1; /* Mỗi mục chiếm phần bằng nhau */
+  text-align: center; /* Căn giữa nội dung */
+  position: relative;
+}
+
+/* Submenu */
+.navPart2 .submenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  padding: 10px;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+/* Hover effect */
+.navPart2 .list-inline-item:hover .submenu {
+  display: block;
+}
+body {
+  overflow-x: hidden;
+}
+
+
+.homeBannerSection {
+    position: relative;
+   
+}
+.bannerContainer{
+  margin-left: 150px;
+  margin-right: 150px;
+  width: 86%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+.homeBannerSection {
+  position: relative;
+}
+
+.homeBannerSection .swiper {
+      overflow: inherit;
+}
+
+.homeBannerSection .swiper .item {
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.homeBannerSection * {
+  outline: none !important;
+}
+
+
+.homeBannerSection .slick-arrow {
+    position: absolute;
+    top: 45%;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px !important;
+    height: 40px !important;
+    background: #444444; /* Assuming the square symbol represents a color like #444444 based on common UI patterns */
+    border-radius: 100%;
+    font-family: FontAwesome !important;
+}
+
+.homeBannerSection .slick-arrow.slick-next {
+    right: 25px !important;
+}
+
+.homeBannerSection .slick-arrow.slick-prev {
+    left: 25px !important;
+}
+
+.homeBannerSection .slick-arrow.slick-next::before {
+    font-family: FontAwesome !important;
+    color: #fff; /* Assuming the square symbol represents a color like #fff */
+}
+
+.homeBannerSection .slick-arrow.slick-prev::before {
+    font-family: FontAwesome !important;
+    color: #fff; /* Assuming the square symbol represents a color like #fff */
+}
+
+.homeBannerSection {
+    cursor: pointer;
+}
+/* General styling for the home products section */
+.homeProducts {
+  padding: 25px 0px;
+  width: 100%;
+}
+
+/* Container margin adjustment for better layout */
+/* .homeProducts .container {
+  margin: 40px 100px;
+  
+} */
+
+/* Styling for the banner image */
+.homeProducts .banner {
+  width: 100%; /* Changed from fixed 600px to 100% to fit the col-md-3 */
+  border-radius: 7px;
+  overflow: hidden;
+  cursor: pointer; /* Added cursor pointer directly to the banner */
+  margin-left: 50px;
+  height: 100%;
+}
+
+.homeProducts .banner img {
+  width: 90%; /* Make image fill its container */
+  height: 100%;
+  height: auto; /* Maintain aspect ratio */
+  display: block; /* Remove extra space below image */
+}
+
+/* Styling for the product row heading */
+.productRow .hd {
+  font-size: 25px;
+  font-weight: 600;
+}
+
+/* Styling for the "View All" button */
+.viewAllBtn {
+  padding: 5px 25px !important;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 30px !important;
+  color: #414141 !important;
+  font-weight: 600;
+  text-transform: capitalize !important;
+  display: flex; /* To align icon next to text */
+  align-items: center; /* To vertically center icon and text */
+}
+
+.viewAllBtn svg {
+  font-size: 20px;
+  margin-left: 5px; /* Space between text and icon */
+}
+
+/* Styling for individual product items within the slider */
+.productItem {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  /* Removed fixed width and height from here.
+     The slider's slidesToShow will handle the width distribution. */
+  margin: 10px; /* Add margin for spacing between items */
+  padding: 10px; /* Add some internal padding */
+  text-align: center; /* Center content within the item */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.productItem .imgWrapper {
+  width: 100%; /* Make image wrapper take full width of productItem */
+  height: 200px; /* Fixed height for image wrapper to ensure consistent image size */
+  overflow: hidden; /* Hide overflowing parts of the image if it's larger than the wrapper */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px; /* Space between image and details */
+}
+
+.productItem .imgWrapper img {
+  width: auto; /* Allow image to scale down if necessary */
+  height: 100%; /* Fill the height of the imgWrapper */
+  max-width: 100%; /* Ensure image doesn't overflow its container */
+  object-fit: contain; /* Ensure the image is scaled to fit within the content box without being cropped or stretched */
+}
+
+/* React Slick overrides for arrows if needed */
+.slick-prev:before, .slick-next:before {
+    color: #333; /* Example: make arrows visible */
+}
+.productItem {
+    width: 100%;
+    height: auto;
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Assuming the white square is a placeholder for a color value like rgba(0,0,0,0.1) */
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    }
+
+.productItem .badge{
+    display: inline-block; padding: 7px 10px ; position: absolute; top:10px;left: 10px; z-index: 100;
+}
+.productItem .info {
+  padding: 15px;
+}
+
+.productItem .info h4 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.productItem .info .oldPrice {
+  font-size: 16px;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.2);
+  text-decoration: line-through;
+}
+.info .oldPrice.lg {
+  font-size: 16px;text-decoration: line-through; color: rgba(0, 0, 0, 0.2);
+}
+.info .netPrice.lg{font-size: 20px; font-weight: bold;}
+.productItem .info .netPrice {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.productItem .actions {
+  position: absolute;
+  top: 20px;
+  right: -50px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.3s ease-in-out;
+  
+}
+.productItem .imgWrapper{overflow: hidden;}
+.productItem .imgWrapper img{transition: all 0.5 ease-in-out;}
+.productItem .imgWrapper:hover .actions{opacity: 1; right: 10px;}
+.productItem .imgWrapper:hover img{transform: scale(1.1);} 
+.productItem .actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px !important;
+  height: 40px !important;
+  width: 40px !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  margin-bottom: 10px;
+}
+.productItem .actions button:hover {
+  background-color: #f0f0f0 !important; /* Example hover background color */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Example hover shadow */
+  transform: translateY(-2px); /* Example slight lift on hover */
+}
+
+.homeCat .swiper {
+  width: 100%;
+}
+
+.homeCat .swiper-slide {
+  background: white;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.homeCat .item img{
+  width: 90%;
+}
+.homeCat .swiper .item {
+  padding: 8px;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.homeCat .hd {
+  font-size: 25px; font-weight: 600; text-transform: uppercase;
+}
+
+.slick-slide > div {
+  padding: 0 10px;
+}
+
+.sticky{
+  position: sticky; top:10px;z-index: 100;
+}
+.banner1 img,
+.banner2 img {
+  max-width: 435px;
+  object-fit: cover;
+}
+
+.newsletterSection {
+  width: 100%;
+  height: auto;
+  background: #a756ad;
+  position: relative;
+  overflow: hidden;
+  padding: 100px 0px;
+}
+
+.newsletterSection .col-md-6 {
+  position: static !important;
+}
+
+.newsletterSection p {
+  font-size: 18px;
+  margin: 10px 0px !important;
+}
+
+.newsletterSection h3 {
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.newsletterSection p.text-light {
+  color: #fff !important;
+  opacity: 0.5;
+  font-size: 15px;
+}
+
+.newsletterSection img {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+}
+
+.newsletterSection form {
+  width: 100%;
+  height: 60px;
+  background: #fff;
+  padding: 10px;
+  position: relative;
+  border-radius: 5px;
+}
+
+.newsletterSection form svg {
+  position: absolute;
+  top: 17px;
+  left: 18px;
+  font-size: 25px;
+  opacity: 0.3;
+}
+
+.newsletterSection form input {
+  width: 100%;
+  height: 100%;
+  background: #fff !important;
+  outline: none !important;
+  border: 0px !important;
+  padding-left: 40px;
+  padding-right: 200px;
+}
+
+.newsletterSection form button {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  background: #85559a !important;
+  font-size: 14px !important;
+  padding: 12px 25px !important;
+  color: #fff !important;
+  text-transform: capitalize !important;
+  font-weight: 600 !important;
+}
+
+footer {
+  width: 100%;
+  height: 500px;
+  margin: auto;
+  background: #fff;
+  padding: 25px 0px;
+}
+
+footer .topInfo {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 20px;
+  margin-left: 47px;
+}
+
+footer .topInfo .col {
+  padding: 10px 15px;
+  padding-left: 20px;
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+footer .topInfo .col:last-child {
+  border-right: 0px;
+}
+
+footer .topInfo svg {
+  font-size: 26px;
+}
+
+footer .topInfo .col span {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+footer .linksWrap h5 {
+  font-size: 15px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+footer .linksWrap ul{
+  padding: 10px;
+}
+
+footer .linksWrap ul li {
+  list-style: none;
+  margin-bottom: 10px;
+}
+
+footer .linksWrap ul li a {
+  color: #000;
+  font-size: 14px;
+}
+
+footer .linksWrap ul li a:hover {
+  text-decoration: none;
+}
+footer .copyright ul li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+footer .copyright ul li a svg {
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+footer .copyright ul li a:hover {
+  background: #2bbef9 !important;
+}
+
+/* The last line is cut off, assuming it's for the SVG color on hover */
+footer .copyright ul li a:hover svg {
+  color: #fff !important; /* Assuming it changes the SVG color to white on hover */
+}
+
+.productModal .MuiPaper-elevation {
+  padding: 2px;
+  position: relative;
+  max-width: 900px !important;
+  width: 900px !important;
+  padding:30px
+}
+.productModal .close {
+  position: absolute;
+  top:10px;
+  right: 0px;
+  color: black;
+  font-size: 17px;
+}
+
+.productModal h4 {
+  font-size: 20px !important;
+  color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.productZoom {
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0px;
+  overflow: hidden;
+  border-radius: 15px;
+}
+
+.zoomSliderBig {
+  width: 100% !important;
+}
+
+.zoomSlider {
+  padding-top: 30px;
+}
+
+.zoomSlider .slick-slide {
+  padding-right: 20px !important;
+}
+
+.zoomSlider :focus {
+  outline: none !important;
+}
+
+.zoomSlider .item {
+  border: 2px solid transparent !important;
+  overflow: hidden;
+  border-radius: 15px;
+  cursor: pointer;
+}
+
+.zoomSlider .slick-current .item {
+  border: 2px solid #3bb77e !important;
+}
+
+.zoomSlider .slick-arrow {
+  top: 55% !important;
+  zoom: 80% !important;
+}
+
+.zoomSlider .slick-arrow.slick-next {
+  right: -2% !important;
+}
+
+.zoomSlider .slick-arrow.slick-prev {
+  left: -5% !important;
+}
+
+/* detail Product */
+.quantityDrop {
+  width: 150px;
+  gap: 10px;
+}
+
+.quantityDrop button {
+  min-width: 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  background: #edeef5 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  color: #000;
+}
+
+.quantityDrop button svg {
+  color: #000 !important;
+}
+
+.quantityDrop input {
+  width: 30px;
+  border: 0px;
+  background: transparent;
+  outline: none !important;
+  text-align: center;
+}
+
+.productModal .actions button {
+  color: #000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  font-size: 10px !important;
+}
+
+.productModal .actions button svg {
+  font-size: 15px !important;
+}
+
+/* ListingPage */
+.product_Listing_Page {
+  padding: 35px 0px;
+}
+
+.product_Listing_Page .productlisting {
+  gap: 20px;
+}
+
+.product_Listing_Page .productlisting .sidebar {
+  width: 20%;
+  flex: 0 0 20%;
+}
+.product_Listing_Page .productlisting .sidebar .sticky{
+  position: sticky;
+  top:20px
+}
+
+.product_Listing_Page .productlisting .sidebar .filterBox h6 {
+  font-weight: 800;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+.product_Listing_Page .productlisting .sidebar .scroll {
+  padding-left: 10px;
+  max-height: 200px;
+  overflow-y: scroll;
+
+}
+
+.product_Listing_Page .productlisting .sidebar .scroll::-webkit-scrollbar {
+  width: 5px !important;
+  height: 5px !important;
+}
+
+.product_Listing_Page .productlisting .sidebar .scroll ul li {
+  list-style: none;
+  margin-bottom: 0px;
+  width: 100%;
+}
+
+.css-12wn2w-MuiButtonBase-root-MuiCheckbox-root {
+  padding: 2px !important;
+}
+
+.css-ahj2mt-MuiTypography-root {
+  font-size: 13px !important;
+}
+
+.css-14bv87-MuiSvgIcon-root {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.css-12wn2w-MuiButtonBase-root-MuiCheckbox-root.Mui-checked,
+.css-12wn2w-MuiButtonBase-root-MuiCheckbox-root.MuiCheckbox-indeterminate {
+  color: #6d4aae !important;
+}
+
+.product_Listing_Page .productlisting .content_right {
+  width: 80%;
+  flex: 0 0 80%;
+}
+
+.range-slider {
+  height: 5px !important;
+}
+
+.range-slider .range-slider__thumb,
+.range-slider .range-slider__range {
+  background: #6d4aae !important;
+}
+
+.range-slider .range-slider__thumb {
+  width: 15px !important;
+  height: 15px !important;
+}
+
+ /* cate/id */
+ .product_Listing_Page .productlisting .content_right {
+  width: 75%;
+  flex: 0 78%;
+  padding-left: 50px;
+}
+
+.product_Listing_Page .productlisting .content_right .showBy {
+  width: 100%;
+  height: auto;
+  background: #f1f3ff;
+  padding: 15px 25px;
+}
+
+.product_Listing_Page .productlisting .content_right .showBy .btnWrapper button {
+  min-width: 35px !important;
+  height: 35px !important;
+  width: 35px !important;
+  border-radius: 50% !important;
+  color: #000;
+}
+
+.product_Listing_Page .productlisting .content_right .showBy .btnWrapper button svg {
+  color: #000;
+  font-size: 18px !important;
+  opacity: 0.5;
+}
+
+.product_Listing_Page .productlisting .content_right .showBy .btnWrapper button:hover svg {
+  opacity: 1;
+}
+.showByFilter button {
+  min-width: auto !important;
+  color: #000;
+}
+
+.showByFilter button svg {
+  color: #000;
+  opacity: 0.6;
+  margin-left: 5px;
+}
+
+.showPerPageDropdown .MuiPaper-root {
+  width: 100px !important;
+}
+
+.productlisting{display: flex; gap:20px;flex-wrap: wrap;}
+
+.productlisting {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.productlisting .productItem.four {
+  width: 21.8%;
+}
+
+.productlisting .productItem.three {
+  width: 30%;
+}
+
+.productlisting .productItem.two {
+  width: 48%;
+}
+
+.productlisting .productItem.one {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.productlisting .productItem.one .imgWrapper {
+  width: 30%;
+}
+
+
+.productDetails .hd {
+  font-size: 26px;
+}
+
+.productDetails .oldPrice {
+  font-size: 20px;
+}
+
+.productDetails .netPrice {
+  font-size: 22px;
+}
+
+.productSize {
+  width: 100%;
+  height: auto;
+  padding: 25px 0px;
+}
+
+.productSize ul li {
+  margin-right: 10px !important;
+}
+
+.productSize ul li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px !important;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 5px !important;
+  cursor: pointer;
+  text-decoration: none !important;
+  color: #000;
+  font-size: 16px !important;
+  transition: all 0.1s ease-in-out;
+}
+
+.productSize ul li a.active {
+  background: #c33ab5 !important;
+  color: #fff !important;
+}
+.ProductDetails .btn-circle {
+  min-width: 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  background: #edeef5 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  color: #000;
+  padding: 5px !important;
+}
+
+.ProductDetails .btn-circle svg {
+  color: #000 !important;
+  opacity: 0.8;
+  font-size: 25px;
+}
+
+
+/* form producdetail */
+/* Styling for review cards */
+/* Tạo kiểu cho thẻ đánh giá */
+.detailsPageTabs {
+  border-radius: 25px !important;
+}
+
+.customTabs ul li {
+  margin-right: 30px !important;
+}
+
+.customTabs ul li button {
+  padding: 6px 25px !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  font-size: 14px !important;
+  text-transform: capitalize !important;
+  border-radius: 30px !important;
+  color: #000 !important;
+}
+
+.customTabs ul li button.active {
+  background: #6d4aae !important;
+  color: #fff !important;
+}
+
+.reviewsCard {
+  margin-bottom: 25px !important;
+}
+.reviewsCard .image {
+  width: 100px;
+}
+
+.reviewsCard .rounded-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 100px;
+  height: 100px;
+}
+
+.reviewsCard .rounded-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reviewsCard .info {
+  width: 85%;
+}
+
+/* Styling for review form */
+/* Tạo kiểu cho biểu mẫu đánh giá */
+.reviewForm .form-group {
+  margin-bottom: 25px;
+}
+
+.reviewForm .form-group .form-control {
+  height: 80px;
+  font-size: 20px;
+  border-radius: 7px !important; /* Added !important for override */
+  padding-left: 20px;
+}
+
+.reviewForm .form-group textarea.form-control {
+  height: 200px;
+  padding-top: 25px;
+}
+
+/* Styling for progress bars */
+/* Tạo kiểu cho thanh tiến trình */
+.progressBarBox {
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  font-size: 16px;
+}
+.cartPage .table thead {
+  background: #e3e3e3 !important;
+  overflow: hidden;
+}
+
+.cartPage .table thead th {
+  border: 0px !important;
+}
+
+.cartPage .table thead th:first-child {
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+}
+
+.cartPage .table thead th:last-child {
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.cartItemImgWrapper {
+  width: 300px;
+}
+
+.cartItemImgWrapper .imgWrapper {
+  width: 100px;
+  overflow: hidden;
+}
+
+.cartItemImgWrapper .info a:hover {
+  text-decoration: none;
+}
+
+.cartItemImgWrapper .info h6 {
+  color: #343434;
+  font-weight: bold;
+}
+
+a:hover {
+  text-decoration: none;
+}
+.cartItemImgWrapper {
+  width: 280px;
+}
+
+.cartItemImgWrapper .imgWrapper {
+  width: 100px;
+  overflow: hidden;
+}
+
+.cartItemImgWrapper .info a:hover {
+  text-decoration: none;
+}
+
+.cartItemImgWrapper .info h6 {
+  color: #343434;
+  font-weight: bold;
+}
+
+.cartItemImgWrapper .info h6:hover {
+  color: #ed174a !important;
+}
+
+.remove {
+  cursor: pointer;
+}
+
+.remove svg {
+  font-size: 30px;
+}
+
+.remove:hover svg {
+  color: #ed174a !important;
+}
+
+.cartPage .quantityDrop button {
+  zoom: 75%;
+}
+
+.cartPage table th,
+.cartPage table td {
+  vertical-align: middle;
+}
+
+.cartPage .table td,
+.cartPage .table th {
+  border-top: 0px !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.cartPage table tbody tr:hover {
+  background: #fafafa;
+}
+.signInWrapper {
+  height: 100vh;
+  background: linear-gradient(135deg, #092f8f 50%, #ffffff 50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.signInBox {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 8px;
+  width: 500px;
+  height: 630px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.logo {
+  width: 100px;
+  margin-bottom: 10px;
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+
+  label {
+    font-size: 14px;
+    margin-top: 10px;
+    color: #555;
+  }
+
+
+
+  .forgot {
+    font-size: 12px;
+    color: #5c6ac4;
+    text-decoration: none;
+    margin-top: 10px;
+    display: inline-block;
+  }
+
+  button {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #5c6ac4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #4b57b3;
+    }
+  }
+}
+.social-list {
+  display: flex;
+  justify-content: center; /* canh giữa ngang */
+  gap: 16px; /* khoảng cách giữa các icon */
+  padding-left: 0;
+  list-style: none;
+  margin-top: 16px;
+ 
+}
+.loginWithGoogle {
+  width: 100%;
+  font-weight: bold !important;
+  color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.loginWithGoogle img {
+  width: 30px;
+  margin-right: 10px;
+}
