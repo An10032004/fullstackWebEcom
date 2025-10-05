@@ -3,29 +3,27 @@ import Slider from "react-slick"
 import 'react-inner-image-zoom/lib/styles.min.css';
 import { useRef, useState } from "react"
 
-const ProductZoom = () => {
+const ProductZoom = ({product}) => {
     const [slideIndex, setSlideIndex] = useState(0)
     const zoomSliderBig = useRef()
     const zoomSlider = useRef()
-    var settings = {
-        dots: false,
-        infinite: false,
-        speed: 500,
-        slidesToShow: 5,
-        slidesToScroll: 1,
-        fade: false,
-        arrows: true
-    };
+     const settingsThumb = {
+    dots: false,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    arrows: true
+  }
 
-    var settings2 = {
-        dots: false,
-        infinite: false,
-        speed: 700,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        fade: false,
-        arrows: false,
-    };
+  const settingsBig = {
+    dots: false,
+    infinite: false,
+    speed: 700,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: false
+  }
     const goto = (index) => {
         setSlideIndex(index)
         zoomSlider.current.slickGoTo(index);
@@ -36,76 +34,57 @@ const ProductZoom = () => {
         <>
 
 
-            <div class="productZoom">
-                <div className="badge badge-primary " style={{ position: 'absolute', top: '20px', left: '30px', zIndex: '1000' }}>23%</div>
-                <Slider {...settings2} className="zoomSliderBig" ref={zoomSliderBig}>
+            <div className="productZoom">
+{product?.discount > 0 && (
+  <div
+    className="badge badge-primary"
+    style={{ position: 'absolute', top: '20px', left: '30px', zIndex: '1000' }}
+  >
+    {product.discount}%
+  </div>
+)}  
+               {product?.images && product.images.length > 0 ? (
+  <>
+    {/* Slider ảnh chính */}
+    <Slider {...settingsBig} className="zoomSliderBig" ref={zoomSliderBig}>
+      {product.images.map((img, index) => (
+        <div className="item imgZoom" key={index}>
+          <InnerImageZoom
+            zoomType="hover"
+            zoomScale={2.5}
+            src={`http://localhost:4000/uploads/${img}`}
+          />
+        </div>
+      ))}
+    </Slider>
 
-                    <div className='item'> {/* Added key prop for list rendering */}
-                        <InnerImageZoom
-                            zoomType="hover"
-                            zoomScale={1}
-                            src={`https://shop.armando-cabral.com/cdn/shop/files/Armando-Cabral-EMPADA-Slip-on-Sneaker-Bianco-Profile_37df031a-5d11-4ab2-8dcf-ebd3feda61d4.jpg?v=1710461434`}
-                        />
-                    </div>
+    {/* Slider thumbnail */}
+    <Slider {...settingsThumb} className="zoomSlider" ref={zoomSlider}>
+      {product.images.map((img, index) => (
+        <div
+          key={index}
+          className={`item ${slideIndex === index ? 'item_active' : ''}`}
+        >
+          <img
+            src={`http://localhost:4000/uploads/${img}`}
+            className="w-100"
+            alt={`thumbnail-${index}`}
+            onClick={() => goto(index)}
+          />
+        </div>
+      ))}
+    </Slider>
+  </>
+) : (
+  <div className="no-images">
+    <img
+      src="/no-image.png"
+      alt="No images available"
+      className="w-100"
+    />
+  </div>
+)}
 
-                    <div className='item'> {/* Added key prop for list rendering */}
-                        <InnerImageZoom
-                            zoomType="hover"
-                            zoomScale={1}
-                            src={`https://shop.armando-cabral.com/cdn/shop/files/Armando-Cabral-EMPADA-Slip-on-Sneaker-Bianco-Profile_37df031a-5d11-4ab2-8dcf-ebd3feda61d4.jpg?v=1710461434`}
-                        />
-                    </div>
-                    <div className='item'> {/* Added key prop for list rendering */}
-                        <InnerImageZoom
-                            zoomType="hover"
-                            zoomScale={1}
-                            src={`https://shop.armando-cabral.com/cdn/shop/files/Armando-Cabral-EMPADA-Slip-on-Sneaker-Bianco-Profile_37df031a-5d11-4ab2-8dcf-ebd3feda61d4.jpg?v=1710461434`}
-                        />
-                    </div>
-                    <div className='item'> {/* Added key prop for list rendering */}
-                        <InnerImageZoom
-                            zoomType="hover"
-                            zoomScale={1}
-                            src={`https://shop.armando-cabral.com/cdn/shop/files/Armando-Cabral-EMPADA-Slip-on-Sneaker-Bianco-Profile_37df031a-5d11-4ab2-8dcf-ebd3feda61d4.jpg?v=1710461434`}
-                        />
-                    </div>
-
-                </Slider>
-
-                <Slider {...settings} className='zoomSlider' ref={zoomSlider}>
-                    <div className={`item ${slideIndex === 0 && 'item_active'}`}>
-                        <img
-                            src={`https://shop.armando-cabral.com/cdn/shop/files/Armando-Cabral-EMPADA-Slip-on-Sneaker-Bianco-Profile_37df031a-5d11-4ab2-8dcf-ebd3feda61d4.jpg?v=1710461434`}
-                            className='w-100'
-                            alt=""
-                            onClick={() => goto(0)}
-                        />
-                    </div>
-                    <div className={`item ${slideIndex === 0 && 'item_active'}`}>
-                        <img
-                            src={`https://shop.armando-cabral.com/cdn/shop/files/Armando-Cabral-EMPADA-Slip-on-Sneaker-Bianco-Profile_37df031a-5d11-4ab2-8dcf-ebd3feda61d4.jpg?v=1710461434`}
-                            className='w-100'
-                            alt=""
-                            onClick={() => goto(1)}
-                        />
-                    </div>
-                    <div className={`item ${slideIndex === 0 && 'item_active'}`}>
-                        <img
-                            src={`https://shop.armando-cabral.com/cdn/shop/files/Armando-Cabral-EMPADA-Slip-on-Sneaker-Bianco-Profile_37df031a-5d11-4ab2-8dcf-ebd3feda61d4.jpg?v=1710461434`}
-                            className='w-100'
-                            alt=""
-                            onClick={() => goto(2)}
-                        />
-                    </div>
-                    <div className={`item ${slideIndex === 0 && 'item_active'}`}>
-                        <img
-                            src={`https://shop.armando-cabral.com/cdn/shop/files/Armando-Cabral-EMPADA-Slip-on-Sneaker-Bianco-Profile_37df031a-5d11-4ab2-8dcf-ebd3feda61d4.jpg?v=1710461434`}
-                            className='w-100'
-                            alt=""
-                            onClick={() => goto(3)}
-                        />
-                    </div>
-                </Slider>
             </div>
         </>
     )

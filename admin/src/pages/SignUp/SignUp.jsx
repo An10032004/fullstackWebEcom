@@ -8,12 +8,13 @@ import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
 import { Button } from "@mui/material";
 import googleicon from "../../assets/images/googleicon.png";
-import { Link } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { FaPhoneAlt, FaUserCircle } from "react-icons/fa";
 import { IoShieldCheckmarkSharp } from "react-icons/io5";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { MdHome } from "react-icons/md";
+import { postData } from "../../utils/api";
 
 const SignUp = () => {
 
@@ -23,6 +24,17 @@ const SignUp = () => {
 
     const context = useContext(MyContext);
 
+    const [formField,setFormField] = useState({
+        name:"",
+        email:"",
+        phone:"",
+        password:"",
+        confirmPassword:"",
+        isAdmin:true
+    })
+
+    const navigate = useNavigate()
+
     useEffect(() => {
         context.setIsHideSidebarAndHeader(true);
         window.scrollTo(0,0);
@@ -31,7 +43,47 @@ const SignUp = () => {
     const focusInput = (index) => {
         setInputIndex(index);
     }
+    const onChangeInput = (e) => {
+        setFormField(() => ({
+            ...formField,
+            [e.target.name] : e.target.value
+        }))
+    }
+    const signUp = (e) => {
+        e.preventDefault()
+       if (!formField.name || !formField.email || !formField.password) {
+      context.showAlert("Vui lòng nhập đầy đủ thông tin!", "warning");
+      return;
+    }
 
+    if (formField.password.length < 6) {
+      context.showAlert("Mật khẩu phải từ 6 ký tự!", "error");
+      return;
+    }
+
+    if (formField.password !== formField.confirmPassword) {
+      context.showAlert("Mật khẩu nhập lại không khớp!", "error");
+      return;
+    }
+
+    // 🔹 Nếu thành công
+    postData('/api/user/signUp', formField).then(res => {
+            context.showAlert("Đăng ký thành công!", "success");
+            navigate('/login');
+            setFormField({
+            name: "",
+            email: "",
+            phone: "",
+            password: "",
+            confirmPassword: "",
+            isAdmin: true,
+    });
+        })
+    
+
+    // 🔹 Reset form
+    
+    }
     return (
         <>
             <img src={pattern} className="login-patern" />
@@ -56,10 +108,12 @@ const SignUp = () => {
                                 <h5 className="font-weight-bold">Register A New Account</h5>
                             </div>
                             <div className="login-wrapper mt-3 card border">
-                                <form>
+                                <form onSubmit={signUp}>
                                     <div className={`form-group position-relative ${inputIndex === 0 && 'focus'}`}>
                                         <span className="icons"><FaUserCircle /></span>
                                         <input
+                                            name="name"
+                                            onChange={onChangeInput}
                                             type="text"
                                             className="form-control"
                                             placeholder="Enter Your Name"
@@ -71,6 +125,8 @@ const SignUp = () => {
                                     <div className={`form-group position-relative ${inputIndex === 1 && 'focus'}`}>
                                         <span className="icons"><MdEmail /></span>
                                         <input
+                                            name="email"
+                                            onChange={onChangeInput}
                                             type="text"
                                             className="form-control"
                                             placeholder="Enter Your Email"
@@ -78,13 +134,27 @@ const SignUp = () => {
                                             onBlur={() => setInputIndex(null)}
                                         />
                                     </div>
+                                    <div className={`form-group position-relative ${inputIndex === 1 && 'focus'}`}>
+                                        <span className="icons"><FaPhoneAlt /></span>
+                                        <input
+                                            name="phone"
+                                            onChange={onChangeInput}
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Enter Your Phone"
+                                            onFocus={() => focusInput(2)}
+                                            onBlur={() => setInputIndex(null)}
+                                        />
+                                    </div>
                                     <div className={`form-group position-relative ${inputIndex === 2 && 'focus'}`}>
                                         <span className="icons"><RiLockPasswordFill /></span>
                                         <input
+                                            name="password"
+                                            onChange={onChangeInput}
                                             type={`${isShowPassword === true ? 'text' : 'password'}`}
                                             className="form-control"
                                             placeholder="Enter Your Password"
-                                            onFocus={() => focusInput(2)}
+                                            onFocus={() => focusInput(3)}
                                             onBlur={() => setInputIndex(null)}
                                         />
                                         <span className="toggle-show-password"
@@ -97,10 +167,12 @@ const SignUp = () => {
                                     <div className={`form-group position-relative ${inputIndex === 3 && 'focus'}`}>
                                         <span className="icons"><IoShieldCheckmarkSharp /></span>
                                         <input
+                                            name="confirmPassword"
+                                            onChange={onChangeInput}
                                             type={`${isShowConfirmPassword === true ? 'text' : 'password'}`}
                                             className="form-control"
                                             placeholder="Confirm Your Password"
-                                            onFocus={() => focusInput(3)}
+                                            onFocus={() => focusInput(4)}
                                             onBlur={() => setInputIndex(null)}
                                         />
                                         <span className="toggle-show-password"
@@ -112,7 +184,7 @@ const SignUp = () => {
                                     </div>
                                     <FormControlLabel control={<Checkbox />} label="I agree to the all Terms & Condiotions" />
                                     <div className="form-group">
-                                        <Button className="btn-blue btn-big w-100">Sign Up</Button>
+                                        <Button type="submit" className="btn-blue btn-big w-100">Sign Up</Button>
                                     </div>
                                     <div className="form-group text-center mb-0">
                                         <div className="d-flex align-items-center justify-content-center or mt-3 mb-3">

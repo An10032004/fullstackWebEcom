@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import Logo from '../../assets/images/Logo.png'
 import CountryDropDown from "../CountryDropdown"
 import { IoBagOutline } from "react-icons/io5"
@@ -6,10 +6,51 @@ import Button from "@mui/material/Button"
 import { FiUser } from "react-icons/fi"
 import SearchBox from "./SearchBox"
 import Navigation from "./Navigation"
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import { MyContext } from "../../App"
+import { fetchDataFromApi } from "../../utils/api"
+import {
+  Avatar,
+  Box,
+  Divider,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+
+import { Settings, Logout, Person } from "@mui/icons-material";
 const Header = () => {
     const context = useContext(MyContext)
+        const [catData, setCatData] = useState([])
+    useEffect(() => {
+            fetchDataFromApi("/api/category").then((res) => {
+                 const categories = res.categoryList || [];
+            setCatData(categories);
+            },[])})
+
+    const navigate = useNavigate();
+const [anchorEl, setAnchorEl] = useState(null);
+const open = Boolean(anchorEl);
+
+const handleClick = (event) => {
+  setAnchorEl(event.currentTarget);
+};
+const handleClose = () => {
+  setAnchorEl(null);
+};
+
+// 🔹 Đăng xuất
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  context.setIsLogin(false);
+  context.showAlert("Đăng xuất thành công!", "success");
+  handleClose();
+  navigate("/");
+};
     return (
         <div className="headerWrapper">
             <div className="top-strip bg-blue">
@@ -41,13 +82,66 @@ const Header = () => {
                                 <div className="part3 d-flex align-items-center ml-auto" >
                                     {context.isLogin === false && <Link to={'/signIn'}><Button className="btn-blue btn-lg btn-big btn-round mr-3">Sign In</Button></Link>
                                     }
-                                    {context.isLogin === true && <Button className="circle mr-3"><FiUser /></Button>
+                                    {context.isLogin === true && <div className="ml-auto cartTab mr-4" >
+                                        <span className="price">{context.user?.name}</span>
+                                    </div>
+                                    }
+                                    
+                                    {context.isLogin === true && <Button className="circle mr-3"><Tooltip title="Tài khoản">
+      <IconButton
+        onClick={handleClick}
+        size="small"
+        sx={{ ml: 2 }}
+        aria-controls={open ? "user-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        className="mr-3"
+      >
+        <FiUser size={22} />
+      </IconButton>
+    </Tooltip>
+                                    <>
+                                        <Menu
+        id="user-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        onClick={handleClose}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        <MenuItem>
+          <ListItemIcon>
+            <Person fontSize="small" />
+          </ListItemIcon>
+          Profile
+        </MenuItem>
+
+        <MenuItem>
+          <ListItemIcon>
+            <Settings fontSize="small" />
+          </ListItemIcon>
+          Settings
+        </MenuItem>
+
+        <Divider />
+
+        <MenuItem>
+          <ListItemIcon>
+            <Logout fontSize="small" />
+          </ListItemIcon>
+          Logout
+        </MenuItem>
+      </Menu>
+    </>
+                                    
+                                    </Button>
                                     }
                                     <div className="ml-auto cartTab" >
                                         <span className="price">$3.29</span>
                                     </div>
                                     <div className="position-relative ml-2">
-                                        <Button className="btn circle circle2 ml-2"><IoBagOutline /></Button>
+                                        <Link to={'/Cart'}> <Button className="btn circle circle2 ml-2"><IoBagOutline /></Button></Link>
                                         <span className="count d-flex align-items-center justify-content-center">1</span>
                                     </div>
 
@@ -58,7 +152,7 @@ const Header = () => {
                     </div>
                 </header>
 
-                <Navigation />
+                <Navigation catData={catData}/>
             </div>
 
 

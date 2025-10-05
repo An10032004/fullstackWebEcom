@@ -18,9 +18,12 @@ import { Snackbar } from "@mui/material";
 
 import { SnackbarProvider,
      useSnackbar } from 'notistack';
+import EditCategory from "./pages/CategoryAdd/CategoryEdit";
+import ProductEdit from "./pages/ProductUpload/ProductEdit";
+import AddSubcategory from "./pages/CategoryAdd/CategoryEdit";
 const MyContext = createContext();
 
-function App() {
+function AppContent() {
 
     const [isToggleSidebar, setIsToggleSidebar] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
@@ -29,6 +32,10 @@ function App() {
     const [isOpenNav, setIsOpenNav] = useState(false);
     const [themeMode, setThemeMode] = useState(localStorage.getItem('themeMode') === 'dark');
     const [baseUrl,setBaseUrl] = useState("http://localhost:4000")
+    const [user,setUser] = useState({
+        name:"",
+        email:""
+    })
     useEffect(() => {
         if (themeMode) {
             document.body.classList.remove('light');
@@ -67,11 +74,26 @@ function App() {
             window.removeEventListener('resize', handleResize);
         };
     }, []);
+    useEffect(() => {
+        const token = localStorage.getItem("token")
+        if(token!== null && token !== ""){
+            setIsLogin(true)
 
+            const userObj = JSON.parse(localStorage.getItem("user"))
+            setUser(userObj)
+        }else{
+            setIsLogin(false)
+        }
+    },[isLogin])
+    
     const openNav = () => {
         setIsOpenNav(true);
     };
         const { enqueueSnackbar } = useSnackbar();
+
+    const showAlert = (message, variant = "default") => {
+    enqueueSnackbar(message, { variant });
+  };
     
     const handleClickVariant = (variant) => () => {
         // variant could be success, error, warning, info, or default
@@ -92,7 +114,10 @@ function App() {
         setIsOpenNav,
         handleClickVariant,
         setBaseUrl,
-        baseUrl
+        baseUrl,
+        showAlert,
+        user,
+        setUser
     };
 
     return (
@@ -126,8 +151,11 @@ function App() {
                                 <Route path="/products" exact={true} element={<Products />} />
                                 <Route path="/product/details" exact={true} element={<ProductDetails />} />
                                 <Route path="/product/upload" exact={true} element={<ProductUpload />} />
+                                <Route path="/product/edit/:id" exact={true} element={<ProductEdit />} />
                                 <Route path="/category/add" exact={true} element={<CategoryAdd />} />
+                                <Route path="/category/edit/:id" exact={true} element={<EditCategory />} />
                                 <Route path="/category" exact={true} element={<Categories />} />
+                                <Route path="/category/edit-subCat" exact={true} element={<AddSubcategory />} />
                             </Routes>
                         </div>
                     </div>
@@ -136,6 +164,14 @@ function App() {
             </BrowserRouter>
         </>
     )
+}
+
+function App() {
+  return (
+    <SnackbarProvider maxSnack={3} autoHideDuration={3000} anchorOrigin={{ vertical: "top", horizontal: "right" }}>
+      <AppContent />
+    </SnackbarProvider>
+  );
 }
 
 export default App;

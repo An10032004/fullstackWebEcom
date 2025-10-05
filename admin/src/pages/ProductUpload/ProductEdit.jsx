@@ -14,8 +14,11 @@ import { IoCloseSharp } from "react-icons/io5";
 // import OutlinedInput from "@mui/material/OutlinedInput";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { FaRegImages } from "react-icons/fa";
-import { fetchDataFromApi, postData } from "../../utils/api";
+import { editData, fetchDataFromApi, postData } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useContext } from "react";
+import { MyContext } from "../../App";
 // breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     const backgroundColor =
@@ -35,7 +38,7 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     };
 });
 
-const ProductUpload = () => {
+const ProductEdit = () => {
     const formData = new FormData()
     const [categoryValue, setCategoryValue] = useState('');
     const [subCategoryValue, setSubCategoryValue] = useState('');
@@ -46,6 +49,7 @@ const ProductUpload = () => {
 
     const [ratingValue, setRatingValue] = useState(1);
 
+    const [isSelectedImages, setIsSelectedImages] = useState(false)
 
     const [productImagesArr, setProductImagesArr] = useState([])
     const [count, setCount] = useState(0)
@@ -57,10 +61,11 @@ const ProductUpload = () => {
     const [files, setFiles] = useState();
     const [imgFiles, setImgFiles] = useState();
     const [previews, setPreviews] = useState([]);
-
-
-    const [catId,setCatId] = useState()
     const navigate = useNavigate()
+    const context = useContext(MyContext)
+
+    let { id } = useParams()
+    const [product, setProducts] = useState([])
     const [formFields, setFormField] = useState({
         name: '',
         description: '',
@@ -85,17 +90,38 @@ const ProductUpload = () => {
             setCatData(res)
             console.log(res)
         });
-    }, []);
-    const [subcatData,setsubCatData] = useState()
-    // useEffect(() => {
-    //     window.scrollTo(0, 0);
-    //     const id = categoryValue
-    //     fetchDataFromApi(`/api/category/${id}`).then((res) => {
-    //         setsubCatData(res)
 
-    //         console.log(res)
-    //     });
-    // }, []);
+
+        fetchDataFromApi(`/api/products/${id}`).then((res) => {
+            setProducts(res);
+            console.log(res)
+            setFormField({
+                name: res.name,
+                description: res.description,
+                brand: res.brand,
+                price: res.price,
+                oldPrice: res.oldPrice,
+                category: res.category,
+                subCategory: res.subCategory,
+                countInStock: res.countInStock,
+                rating: res.rating,
+                isFeatured: res.isFeatured,
+                discount: res.discount,
+                productRAMS: res.productRAMS || [],
+                productSIZE: res.productSIZE || [],
+                productWeight: res.productWeight || []
+            });
+            setRatingValue(res.rating)
+            setCategoryValue(res.category)
+            setSubCategoryValue(res.subCategory || "")
+            setFeaturedValue(res.isFeatured)
+            setProductRams(res.productRAMS || []);
+            setProductSize(res.productSIZE || []);
+            setProductWeight(res.productWeight || []);
+            setPreviews(res.images)
+        });
+    }, []);
+
     useEffect(() => {
         if (!imgFiles) return
         let tmp = [];
@@ -105,7 +131,7 @@ const ProductUpload = () => {
 
         const objectUrls = tmp;
         console.log(objectUrls)
-         setPreviews((prev) => [...prev, ...objectUrls]);
+        setPreviews(objectUrls);
 
         // free memory
         return () => {
@@ -114,15 +140,16 @@ const ProductUpload = () => {
             }
         };
     }, [imgFiles]);
+    const [subcatData, setsubCatData] = useState()
+
     const handleChangecategory = (event) => {
         setCategoryValue(event.target.value);
         setFormField(() => ({
             ...formFields,
             category: event.target.value
         }))
-        
         fetchDataFromApi(`/api/category/${event.target.value}`).then((res) => {
-            setsubCatData(res.subCat)  
+            setsubCatData(res.subCat)
 
             console.log(res.subCat)
         });
@@ -134,7 +161,6 @@ const ProductUpload = () => {
             ...formFields,
             subCategory: event.target.value
         }))
-       
     };
 
     const handleChangefeaturedValue = (event) => {
@@ -144,38 +170,39 @@ const ProductUpload = () => {
             isFeatured: event.target.value
         }))
     };
-const handleChangeProductRams = (event) => {
-    const { value } = event.target;
-    const newValue = typeof value === 'string' ? value.split(',') : value;
 
-    setProductRams(newValue);
-    setFormField((prev) => ({
-        ...prev,
-        productRAMS: newValue
-    }));
-};
+    const handleChangeProductRams = (event) => {
+        const { value } = event.target;
+        const newValue = typeof value === 'string' ? value.split(',') : value;
 
-const handleChangeProductSize = (event) => {
-    const { value } = event.target;
-    const newValue = typeof value === 'string' ? value.split(',') : value;
+        setProductRams(newValue);
+        setFormField((prev) => ({
+            ...prev,
+            productRAMS: newValue
+        }));
+    };
 
-    setProductSize(newValue);
-    setFormField((prev) => ({
-        ...prev,
-        productSIZE: newValue
-    }));
-};
+    const handleChangeProductSize = (event) => {
+        const { value } = event.target;
+        const newValue = typeof value === 'string' ? value.split(',') : value;
 
-const handleChangeProductWeight = (event) => {
-    const { value } = event.target;
-    const newValue = typeof value === 'string' ? value.split(',') : value;
+        setProductSize(newValue);
+        setFormField((prev) => ({
+            ...prev,
+            productSIZE: newValue
+        }));
+    };
 
-    setProductWeight(newValue);
-    setFormField((prev) => ({
-        ...prev,
-        productWeight: newValue
-    }));
-};
+    const handleChangeProductWeight = (event) => {
+        const { value } = event.target;
+        const newValue = typeof value === 'string' ? value.split(',') : value;
+
+        setProductWeight(newValue);
+        setFormField((prev) => ({
+            ...prev,
+            productWeight: newValue
+        }));
+    };
     const addProductImages = () => {
 
         const imgGrid = document.querySelector('#imgGrid');
@@ -197,7 +224,7 @@ const handleChangeProductWeight = (event) => {
         setFormField(() => ({ ...formFields, [e.target.name]: e.target.value }))
     }
 
-    const addProduct = (e) => {
+    const editProduct = (e) => {
         e.preventDefault()
         setIsLoading(true)
         formData.append('name', formFields.name);
@@ -214,7 +241,7 @@ const handleChangeProductWeight = (event) => {
         formData.append('productRAMS', formFields.productRAMS);
         formData.append('productSIZE', formFields.productSIZE);
         formData.append('productWeight', formFields.productWeight);
-        postData('/api/products/create', formFields).then((res) => {
+        editData(`/api/products/${id}`, formFields).then((res) => {
             setIsLoading(false)
             setFormField({
                 name: '',
@@ -241,22 +268,29 @@ const handleChangeProductWeight = (event) => {
 
     const onChangeFile = async (e, apiEndPoint) => {
         try {
-            const imgArr = []
-            const files = e.target.files
-            setImgFiles(e.target.files)
+            const imgArr = [];
+            const files = e.target.files;
+
+            //const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
-                const file = files[i]
-                imgArr.push(file)
-                formData.append('images', file)
+                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
+                    setImgFiles(files);
+                    const file = files[i];
+                    imgArr.push(file);
+                    formData.append('images', file);
+                    setFiles(imgArr);
+
+                    console.log(imgArr);
+                    setIsSelectedImages(true);
+                    postData(apiEndPoint, formData, id).then((res) => {
+                        console.log(res.images)
+                    });
+                }
             }
 
-            setFiles(imgArr)
-            postData(apiEndPoint, formData).then(res => {
-                console.log(res)
-            })
 
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
 
@@ -264,7 +298,7 @@ const handleChangeProductWeight = (event) => {
         <>
             <div className="right-content w-100">
                 <div className="card shadow border-0 w-100 flex-row p-4 res-col">
-                    <h5 className="mb-0">Product Upload</h5>
+                    <h5 className="mb-0">Edit Product</h5>
                     <Breadcrumbs aria-label="breadcrumb" className="ml-auto breadcrumbs_">
                         <StyledBreadcrumb
                             component="a"
@@ -283,18 +317,18 @@ const handleChangeProductWeight = (event) => {
                     </Breadcrumbs>
                 </div>
 
-                <form className="form" onSubmit={addProduct}>
+                <form className="form" onSubmit={editProduct}>
                     <div className="row">
                         <div className="col-sm-12">
                             <div className="card p-4">
                                 <h5 className="mb-4">Basic Information</h5>
                                 <div className="form-group">
                                     <h6>PRODUCT NAME</h6>
-                                    <input type="text" name="name" onChange={inputChange} placeholder="type here" />
+                                    <input type="text" name="name" onChange={inputChange} placeholder="type here" value={formFields.name || ""} />
                                 </div>
                                 <div className="form-group">
                                     <h6>DESCRIPTION</h6>
-                                    <textarea placeholder="type here..." rows={10} cols={10} name="description" onChange={inputChange} />
+                                    <textarea placeholder="type here..." rows={10} cols={10} name="description" onChange={inputChange} value={formFields.description || ""} />
                                 </div>
                                 <div className="row">
                                     <div className="col">
@@ -314,7 +348,7 @@ const handleChangeProductWeight = (event) => {
                                                 {
                                                     catData?.length !== 0 && catData?.map((cat, index) => {
                                                         return (
-                                                            <MenuItem value={cat.id} key={index} onChange={(e) => setCatId(e.target.value)}>{cat.name}</MenuItem>
+                                                            <MenuItem value={cat.id} key={index}>{cat.name}</MenuItem>
                                                         )
                                                     })
                                                 }
@@ -343,7 +377,7 @@ const handleChangeProductWeight = (event) => {
                                     <div className="col">
                                         <div className="form-group">
                                             <h6>PRICE </h6>
-                                            <input type="text" name="price" onChange={inputChange} />
+                                            <input type="text" name="price" onChange={inputChange} value={formFields.price || ""} />
                                         </div>
                                     </div>
                                 </div>
@@ -352,7 +386,7 @@ const handleChangeProductWeight = (event) => {
                                     <div className="col">
                                         <div className="form-group">
                                             <h6>OLD PRICE </h6>
-                                            <input type="text" name="oldPrice" onChange={inputChange} />
+                                            <input type="text" name="oldPrice" onChange={inputChange} value={formFields.oldPrice || ""} />
                                         </div>
                                     </div>
                                     <div className="col">
@@ -380,7 +414,7 @@ const handleChangeProductWeight = (event) => {
                                     <div className="col">
                                         <div className="form-group">
                                             <h6>PRODUCT STOCK </h6>
-                                            <input type="text" name="countInStock" onChange={inputChange} />
+                                            <input type="text" name="countInStock" onChange={inputChange} value={formFields.countInStock || ""} />
                                         </div>
                                     </div>
                                 </div>
@@ -389,13 +423,13 @@ const handleChangeProductWeight = (event) => {
                                     <div className="col">
                                         <div className="form-group">
                                             <h6>BRAND</h6>
-                                            <input type="text" name="brand" onChange={inputChange} />
+                                            <input type="text" name="brand" onChange={inputChange} value={formFields.brand || ""} />
                                         </div>
                                     </div>
                                     <div className="col">
                                         <div className="form-group">
                                             <h6>DISCOUNT</h6>
-                                            <input type="text" name="discount" onChange={inputChange}/>
+                                            <input type="text" name="discount" onChange={inputChange} value={formFields.discount || ""} />
                                         </div>
                                     </div>
                                     <div className="col">
@@ -409,14 +443,15 @@ const handleChangeProductWeight = (event) => {
                                                 className="w-100"
                                             // MenuProps={MenuProps}
                                             >
-                                                <MenuItem value="1GB">1GB</MenuItem>
-                                                <MenuItem value="2GB">2GB</MenuItem>
                                                 <MenuItem value="4GB">4GB</MenuItem>
                                                 <MenuItem value="8GB">8GB</MenuItem>
                                                 <MenuItem value="10GB">10GB</MenuItem>
                                                 <MenuItem value="12GB">12GB</MenuItem>
                                             </Select>
                                         </div>
+
+
+
                                     </div>
 
                                     <div className="col">
@@ -506,47 +541,52 @@ const handleChangeProductWeight = (event) => {
                                         {previews.length !== 0 && previews?.map((img, index) => {
                                             return (
                                                 <div className='uploadBox' key={index}>
-                                                    <img src={img} className="w-100" />
+                                                    {
+                                                        isSelectedImages === true ?
+                                                            <img src={`${img}`} className="w-100" />
+                                                            :
+                                                            <img src={`${context.baseUrl}/uploads/${img}`} className="w-100" />
+                                                    }
                                                 </div>
                                             )
                                         })}
-                                    
 
 
-                                    <div className="upload-box">
-                                        <input
-                                            type="file"
-                                            multiple
-                                            accept="image/*"
-                                            onChange={(e) => onChangeFile(e, '/api/products/upload')}
-                                            name="images"
-                                        />
-                                        <div className="info">
-                                            <span><FaRegImages /></span>
-                                            <h5>image upload</h5>
+
+                                        <div className="upload-box">
+                                            <input
+                                                type="file"
+                                                multiple
+                                                accept="image/*"
+                                                onChange={(e) => onChangeFile(e, '/api/products/upload')}
+                                                name="images"
+                                            />
+                                            <div className="info">
+                                                <span><FaRegImages /></span>
+                                                <h5>image upload</h5>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+
+                                <Button type="submit" className="btn-blue btn-lg btn-big">
+                                    <FaCloudUploadAlt />
+                                    &nbsp;
+                                    {isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'}
+                                </Button>
                             </div>
 
-                            <Button type="submit" className="btn-blue btn-lg btn-big">
-                                <FaCloudUploadAlt />
-                                &nbsp;
-                                {isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'}
-                            </Button>
                         </div>
 
+
+
                     </div>
-
-
-
-            </div>
-        </form >
+                </form >
 
             </div >
         </>
     )
 }
 
-export default ProductUpload;
+export default ProductEdit;
 

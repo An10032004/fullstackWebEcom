@@ -210,67 +210,71 @@ const Header = () => {
                                 </Menu>
                             </div>
 
-                            {
-                                context.isLogin !== false ? 
-                                <Link to={'/login'}><Button className="btn-blue btn-lg btn-round">Sign In</Button></Link> : 
-                                <div className="myacc-wrapper">
-                                <Button className="myacc d-flex align-items-center"
-                                    onClick={handleOpenMyAccDrop}>
-                                    <div className="user-img">
-                                        <span className="rounded-circle">
-                                            <img src={user} alt="user" />
-                                        </span>
-                                    </div>
-                                    <div className="use-info res-hide">
-                                        <h4>Keira Knightley <MdArrowDropDown style={{ fontSize: '22px' }} /></h4>
-                                        <p className="mb-0">@keira123</p>
-                                    </div>
-                                </Button>
-                                <Menu
-                                    anchorEl={anchorEl}
-                                    id="account-menu"
-                                    open={openMyacc}
-                                    onClose={handleCloseMyAccDrop}
-                                    onClick={handleCloseMyAccDrop}
-                                    slotProps={{
-                                        paper: {
-                                            elevation: 0,
-                                            sx: {
-                                                overflow: 'visible',
-                                                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                                                '& .MuiAvatar-root': {
-                                                    width: 32,
-                                                    height: 32,
-                                                    ml: -0.5,
-                                                    mr: 1,
-                                                }
-                                            },
-                                        },
-                                    }}
-                                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                                >
-                                    <MenuItem onClick={handleCloseMyAccDrop}>
-                                        <ListItemIcon>
-                                            <PersonAdd fontSize="small" />
-                                        </ListItemIcon>
-                                        My account
-                                    </MenuItem>
-                                    <MenuItem onClick={handleCloseMyAccDrop}>
-                                        <ListItemIcon>
-                                            <IoShieldHalfSharp />
-                                        </ListItemIcon>
-                                        Reset Password
-                                    </MenuItem>
-                                    <MenuItem onClick={handleCloseMyAccDrop}>
-                                        <ListItemIcon>
-                                            <Logout fontSize="small" />
-                                        </ListItemIcon>
-                                        Logout
-                                    </MenuItem>
-                                </Menu>
-                            </div>
-                            }
+                           {
+  context.isLogin === false ? (
+    // ✅ Nếu chưa đăng nhập thì show nút Sign In
+    <Link to={'/login'}>
+      <Button className="btn-blue btn-lg btn-round">Sign In</Button>
+    </Link>
+  ) : (
+    // ✅ Nếu đã đăng nhập thì show menu tài khoản
+    <div className="myacc-wrapper">
+      <Button className="myacc d-flex align-items-center" onClick={handleOpenMyAccDrop}>
+        <div className="user-img">
+          <span className="rounded-circle">
+            <img src={user} alt="user" />
+          </span>
+        </div>
+        <div className="use-info res-hide">
+          <h4>
+            {context.user?.name || "Guest"}{" "}
+            <MdArrowDropDown style={{ fontSize: '22px' }} />
+          </h4>
+          <p className="mb-0">{context.user?.email || ""}</p>
+        </div>
+      </Button>
+
+      <Menu
+        anchorEl={anchorEl}
+        id="account-menu"
+        open={openMyacc}
+        onClose={handleCloseMyAccDrop}
+        onClick={handleCloseMyAccDrop}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem onClick={handleCloseMyAccDrop}>
+          <ListItemIcon>
+            <PersonAdd fontSize="small" />
+          </ListItemIcon>
+          My account
+        </MenuItem>
+        <MenuItem onClick={handleCloseMyAccDrop}>
+          <ListItemIcon>
+            <IoShieldHalfSharp />
+          </ListItemIcon>
+          Reset Password
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            // ✅ Xử lý Logout
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            context.setIsLogin(false);
+            context.setUser({ name: "", email: "" ,id:""});
+            context.showAlert("Đăng xuất thành công!", "success");
+          }}
+        >
+          <ListItemIcon>
+            <Logout fontSize="small" />
+          </ListItemIcon>
+          Logout
+        </MenuItem>
+      </Menu>
+    </div>
+  )
+}
+
                             
                         </div>
                     </div>

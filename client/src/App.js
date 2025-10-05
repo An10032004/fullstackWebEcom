@@ -11,17 +11,43 @@ import ProductDetails from './Pages/ProductDetails';
 import Cart from './Pages/Cart';
 import SignIn from './Pages/SignIn';
 import SignUp from './Pages/SignUp';
+import ProductModal from './Components/ProductModal';
+import { useSnackbar } from "notistack";
 const MyContext = createContext()
 
 function App() {
   const [countryList,setCountryList] = useState([])
   const [selectedCountry,setselectedCountry] = useState('')
-  const [isOpenProductModal,setIsOpenProductModal] = useState(false)
+  const [isOpenProductModal,setIsOpenProductModal] = useState({
+    id:'',
+    open:false,
+  })
+  const [user,setUser] = useState({
+        name:"",
+        email:""
+    })
+  const { enqueueSnackbar } = useSnackbar(); // hook của notistack
+
+  const showAlert = (message, type = "default") => {
+    enqueueSnackbar(message, { variant: type });
+  };
   const [isHeaderFooterShow,setIsHeaderFooterShow] = useState(true)
   const [isLogin,setIsLogin] = useState(false)
   useEffect(() =>{
     getCountry("https://open.oapi.vn/location/countries")
   },[])
+
+  useEffect(() => {
+        const token = localStorage.getItem("token")
+        if(token!== null && token !== ""){
+            setIsLogin(true)
+
+            const userObj = JSON.parse(localStorage.getItem("user"))
+            setUser(userObj)
+        }else{
+            setIsLogin(false)
+        }
+    },[isLogin])
   const values={
     countryList,
     selectedCountry,
@@ -30,13 +56,17 @@ function App() {
     setIsOpenProductModal,
     isHeaderFooterShow,
     setIsHeaderFooterShow,
-    isLogin,setIsLogin
+    isLogin,setIsLogin,
+    showAlert,
+    user,setUser
   }
+
+  
 
   const getCountry= async (url) => {
      await axios.get(url).then((res) => {
       setCountryList(res.data.data)
-      console.log(res.data.data)
+      
     })
   }
   return (
@@ -52,10 +82,13 @@ function App() {
         <Route path="/signUp" exact={true} element={<SignUp />}/>
       </Routes>
       { isHeaderFooterShow ===true && <Footer  />}
+      { isOpenProductModal.open && <ProductModal 
+            />}
       </MyContext.Provider>
    </BrowserRouter>
   );
 }
+
 
 export default App;
 export {MyContext}

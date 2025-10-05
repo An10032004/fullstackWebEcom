@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
     }
 
     const page = parseInt(req.query.page) || 1;
-    const perPage =  1; // hoặc 10 tùy bạn
+    const perPage =  2; // hoặc 10 tùy bạn
     const totalPosts = await Category.countDocuments();
     const totalPages = Math.ceil(totalPosts / perPage);
 
@@ -104,8 +104,18 @@ router.post('/create', async (req, res) => {
     const uploadStatus = await Promise.all(imagesToUpload);
     const imgurl = uploadStatus.map((item) => item.secure_url);
 
+    let subCat = req.body.subCat;
+    if (!Array.isArray(subCat)) {
+      if (typeof subCat === 'string') {
+        subCat = [subCat];
+      } else {
+        subCat = [];
+      }
+    }
+
     let category = new Category({
       name: req.body.name,
+      subCat:subCat,
       images: imgurl,
       color: req.body.color,
     });
@@ -140,6 +150,7 @@ router.put('/:id', async (req, res) => {
       req.params.id,
       {
         name: req.body.name,
+        subCat:req.body.subCat,
         images: imgurl,
         color: req.body.color,
       },
@@ -162,5 +173,33 @@ router.put('/:id', async (req, res) => {
     });
   }
 });
+
+// routes/category.js
+router.put('/:id/add-subcat', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { subCat } = req.body; // có thể là string hoặc array
+
+    if (!subCat || (Array.isArray(subCat) && subCat.length === 0)) {
+      return res.status(400).json({ success: false, error: 'SubCategory is required' });
+    }
+
+    const category = await Category.findByIdAndUpdate(
+      id,
+      { $push: { subCat: { $each: Array.isArray(subCat) ? subCat : [subCat] } } },
+      { new: true }
+    );
+
+    if (!category) {
+      return res.status(404).json({ success: false, error: 'Category not found' });
+    }
+    console.log("ADDOK")
+    res.json({ success: true, category });
+  } catch (err) {
+    console.error('PUT /:id/add-subcat error:', err);
+    res.status(500).json({ success: false, error: err.message || err });
+  }
+});
+
 
 module.exports = router;

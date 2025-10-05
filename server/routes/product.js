@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
       const productList = await Product.find().populate("category");
       return res.status(200).json(productList);
     }
-
+   
     const page = parseInt(req.query.page) || 1;
     const perPage = 1; // bạn có thể đổi sang 1 hoặc số tùy ý
     const totalProducts = await Product.countDocuments();
@@ -68,6 +68,124 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get("/category/name/:catName", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 4;
+
+    const category = await Category.findOne({ name: req.params.catName });
+    if (!category) {
+      return res.status(404).json({ success: false, message: "Category not found" });
+    }
+
+    const totalProducts = await Product.countDocuments({ category: category._id });
+    const totalPages = Math.ceil(totalProducts / perPage);
+
+    const productList = await Product.find({ category: category._id })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .populate("category");
+
+    return res.status(200).json({
+      success: true,
+      productList,
+      totalPages,
+      page,
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get("/category/:categoryId", async (req, res) => {
+  try {
+    // const page = parseInt(req.query.page) || 1;
+    // const perPage = 4;
+
+  const category = await Category.findById(req.params.categoryId); // 🔥 Dùng _id
+    if (!category) {
+      return res.status(404).json({ success: false, message: "Category not found" });
+    }
+    const { min, max, categories, brands } = req.query;
+
+    // const totalProducts = await Product.countDocuments({ category: category._id });
+    // const totalPages = Math.ceil(totalProducts / perPage);
+     let filter = { category: category._id };
+
+    if (min && max) {
+      filter.price = { $gte: parseInt(min), $lte: parseInt(max) };
+    }
+
+    if (brands) {
+      filter.brand = { $in: brands.split(",") };
+    }
+
+    
+    const productList = await Product.find(filter)
+      // .skip((page - 1) * perPage)
+      // .limit(perPage)
+      .populate("category");
+
+    return res.status(200).json({
+      success: true,
+      productList,
+      // totalPages,
+      // page,
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get("/featured",async (req,res) => {
+  const productList = await Product.find({isFeatured:true})
+  if(!productList) {
+    res.status(500).json({success:false})
+  }
+  return res.status(200).json(productList)
+})
+// router.get("/allProduct", async (req, res) => {
+//   try {
+//     const productList = await Product.find({});
+
+//     if (!productList || productList.length === 0) {
+//       return res.status(404).json({ success: false, message: "No products in stock" });
+//     }
+
+//     return res.status(200).json(productList);
+//   } catch (err) {
+//     return res.status(500).json({ success: false, error: err.message });
+//   }
+// });
+
+router.get("/allProduct", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // mặc định trang 1
+    const perPage = 4;
+
+    const totalProducts = await Product.countDocuments();
+    const totalPages = Math.ceil(totalProducts / perPage);
+
+    if (page > totalPages && totalPages > 0) {
+      return res.status(404).json({ success: false, message: "Page not found" });
+    }
+
+    const productList = await Product.find({})
+      .skip((page - 1) * perPage)
+      .limit(perPage);
+
+    return res.status(200).json({
+      success: true,
+      productList,
+      totalPages,
+      page,
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
 router.get('/:id', async (req, res) => {
   const product = await Product.findById(req.params.id);
 
@@ -90,11 +208,17 @@ router.post('/create', async (req, res) => {
         description: req.body.description,
         images: imagesArr,
         brand: req.body.brand,
+        oldPrice:req.body.oldPrice,
         price: req.body.price,
         category: req.body.category,
+        subCategory: req.body.subCategory,
         countInStock: req.body.countInStock,
         rating: req.body.rating,
         isFeatured: req.body.isFeatured,
+        discount:req.body.discount,
+        productRAMS:req.body.productRAMS,
+        productSIZE:req.body.productSIZE,
+        productWeight:req.body.productWeight
     });
 
     product = await product.save();
@@ -132,68 +256,73 @@ router.delete('/:id', async (req, res) => {
     })
 });
 
-
 router.put('/:id', async (req, res) => {
-    const limit = pLimit(2);
-    
-        const imagesToUpload = req.body.images.map((image) => {
-            return limit(async () => {
-                const result = await cloudinary.uploader.upload(image);
-                // console.log(`Successfully uploaded ${image}`);
-                // console.log(`> Result: ${result.secure_url}`);
-                return result;
-            })
-        });
-    
-        const uploadStatus = await Promise.all(imagesToUpload)
-    
-        const imgurl = uploadStatus.map((item) => {
-            return item.secure_url
-        })
-    
-        if(!uploadStatus) {
-            return res.status(500).json({
-                error:"image cannot upload",
-                status:false
-            })
+  try {
+    // Lấy product cũ
+    const oldProduct = await Product.findById(req.params.id);
+    if (!oldProduct) {
+      return res.status(404).json({
+        message: 'Product not found!',
+        status: false
+      });
+    }
+    let finalImages = oldProduct.images;
+    // Nếu product có ảnh cũ thì xoá trong thư mục uploads
+    if (imagesArr.length > 0) {
+      // Xoá ảnh cũ trong thư mục uploads
+      if (oldProduct.images && oldProduct.images.length > 0) {
+        for (const image of oldProduct.images) {
+          const filePath = `uploads/${image}`;
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+          }
         }
+      }
 
-    const category = await Category.findById(req.body.category);
-    if (!category) {
-        return res.status(404).send("Invalid Category!");
+      // Gán ảnh mới
+      finalImages = imagesArr;
     }
 
-    
-
+    // Update product với ảnh mới từ imagesArr
     const product = await Product.findByIdAndUpdate(
-        req.params.id,
-        {name: req.body.name,
+      req.params.id,
+      {
+        name: req.body.name,
         description: req.body.description,
-        images: imgurl,
+        images: finalImages,
         brand: req.body.brand,
         price: req.body.price,
         category: req.body.category,
+        subCategory: req.body.subCategory,
         countInStock: req.body.countInStock,
         rating: req.body.rating,
         numReviews: req.body.numReviews,
-        isFeatured: req.body.isFeatured},
-         {
-            new: true
-        }
+        isFeatured: req.body.isFeatured,
+        discount:req.body.discount,
+        productRAMS:req.body.productRAMS,
+        productSIZE:req.body.productSIZE,
+        productWeight:req.body.productWeight
+      },
+      { new: true }
     );
 
     if (!product) {
-        res.status(404).json({
-            message: 'the product can not be updated!',
-            status: false
-        })
-    } else {
-        res.status(200).json({
-            message: 'the product is updated!',
-            status: true
-        });
+      return res.status(404).json({
+        message: 'The product cannot be updated!',
+        status: false
+      });
     }
 
-    // res.send(product);
+    res.status(200).json({
+      message: 'The product is updated!',
+      status: true,
+      product
+    });
+
+  } catch (error) {
+    console.error('PUT /:id error:', error);
+    res.status(500).json({ success: false, error: error.message || error });
+  }
 });
+
 module.exports = router

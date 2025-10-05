@@ -48,6 +48,7 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 const Categories = () => {
     const [formFields,setFormFields] =  useState({
             name:'',
+            subCat:[],
             images:[],
             color:''
         })
@@ -72,7 +73,8 @@ const Categories = () => {
     const editCategory = (id) =>{
         setFormFields({
                 name:'',
-                images:'',
+                subCat:[],
+                images:[],
                 color:''
             })
         setOpen(true);
@@ -80,6 +82,7 @@ const Categories = () => {
          fetchDataFromApi(`/api/category/${id}`).then((res) => {
             setFormFields({
                 name:res.name,
+                subCat:res.subCat,
                 images:res.images,
                 color:res.color
             })
@@ -119,7 +122,7 @@ const Categories = () => {
     } 
 
     const deleteCat =(id) => {
-        deleteData(`/api/category/`,id).then((res) => {
+        deleteData(`/api/category/${id}`,formFields).then((res) => {
             fetchDataFromApi('/api/category').then((res) => {
             setCatData(res.categoryList || []);
 
@@ -158,7 +161,9 @@ const Categories = () => {
                  <Link to="/category/add">
                         <Button className="ml-4 btn-blue mr-">Add Category</Button>
                     </Link>
-                   
+                   <Link to="/category/edit-subCat">
+                        <Button className="ml-4 btn-blue mr-">Add SubCategory</Button>
+                    </Link>
                 </div>
 
                 <div className="row dashboard-box-wrapper-row dashboard-box-wrapper-row-v2">
@@ -268,6 +273,7 @@ const Categories = () => {
                                     <th>UID</th>
                                     <th>Image</th>
                                     <th>Category</th>
+                                    <th>Sub Category</th>
                                     <th>Color</th>
                                     <th>Action</th>
                                 </tr>
@@ -293,6 +299,7 @@ const Categories = () => {
                                                     </div>
                                                 </td>
                                                 <td>{item.name}</td>
+                                                <td>{item.subCat[0]},{item.subCat[1]}</td>
                                                 <td>{item.color}</td>
 
                                                 <td>
@@ -341,11 +348,25 @@ const Categories = () => {
               onChange={changeInput}
             />
 
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="subCat"
+              name="subCat"
+              label="Sub Category"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={formFields.subCat}
+              onChange={addImgURL}
+            />
+
              <TextField
               autoFocus
               required
               margin="dense"
-              id="name"
+              id="images"
               name="images"
               label="Category Images"
               type="text"
@@ -359,7 +380,7 @@ const Categories = () => {
               autoFocus
               required
               margin="dense"
-              id="name"
+              id="color"
               name="color"
               label="Category Color"
               type="text"

@@ -27,6 +27,10 @@ const productSchema = new mongoose.Schema({
     ref: 'Category',
     required: true
   },
+  subCategory: {
+    type: String,
+  required: true
+  },
   countInStock: {
     type: Number,
     required: true,
@@ -44,6 +48,19 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  discount : {
+    type:Number,
+    default:0,
+  },
+  productRAMS:[{
+    type:String
+  }],
+  productSIZE:[{
+    type:String
+  }],
+  productWeight:[{
+    type:String
+  }],
   dateCreated: {
     type: Date,
     default: Date.now

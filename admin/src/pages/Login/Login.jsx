@@ -8,7 +8,8 @@ import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
 import { Button } from "@mui/material";
 import googleicon from "../../assets/images/googleicon.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { postData } from "../../utils/api";
 
 const Login = () => {
 
@@ -16,15 +17,68 @@ const Login = () => {
     const [isShowPassword, setIsShowPassword] = useState(false);
 
     const context = useContext(MyContext);
-
+    const navigate = useNavigate()
     useEffect(() => {
         context.setIsHideSidebarAndHeader(true);
     }, [])
+
 
     const focusInput = (index) => {
         setInputIndex(index);
     }
 
+     const [formField,setFormField] = useState({
+            email:"",
+            password:"",
+            isAdmin:true
+        })
+
+    
+        const onChangeInput = (e) => {
+            setFormField(() => ({
+                ...formField,
+                [e.target.name] : e.target.value
+            }))
+        }
+        const signin = (e) => {
+            e.preventDefault()
+            if (!formField.email || !formField.password) {
+      context.showAlert("Vui lòng nhập đầy đủ thông tin!", "warning");
+      return;
+    }
+
+    if (formField.password.length < 6) {
+      context.showAlert("Mật khẩu phải từ 6 ký tự!", "error");
+      return;
+    }
+    
+       
+
+        // 🔹 Nếu thành công
+        postData('/api/user/signin', formField).then(res => {
+            if (!res?.isAdmin) {
+                context.showAlert("Tài khoản này không có quyền Admin!", "error");
+                console.log(res)
+                return;
+                }
+                console.log(res)
+                localStorage.setItem("token",res.token) 
+
+                const user = {
+                    name:res.user?.name,
+                    email:res.user?.email,
+                    userId:res.user?.id
+                }
+                localStorage.setItem("user",JSON.stringify(user)) 
+                
+                context.showAlert("Đăng Nhapthành công!", "success");
+                navigate('/');
+                setFormField({
+                email: "",
+                password: "",
+                isAdmin: true,
+        });
+    })}
     return (
         <>
             <img src={pattern} className="login-patern" />
@@ -35,11 +89,14 @@ const Login = () => {
                         <h5 className="font-weight-bold">Login to Hotash</h5>
                     </div>
                     <div className="login-wrapper mt-3 card border">
-                        <form>
+                        <form  onSubmit={signin}>
                             <div className={`form-group position-relative ${inputIndex === 0 && 'focus'}`}>
                                 <span className="icons"><MdEmail /></span>
                                 <input
-                                    type="text"
+                                    ype="email"
+                                    name="email"
+                                    value={formField.email}
+                                    onChange={onChangeInput}
                                     className="form-control"
                                     placeholder="Enter Your Email"
                                     onFocus={() => focusInput(0)}
@@ -52,6 +109,9 @@ const Login = () => {
                                 <input
                                     type={`${isShowPassword === true ? 'text' : 'password'}`}
                                     className="form-control"
+                                     name="password"
+                                    value={formField.password}
+                                    onChange={onChangeInput}
                                     placeholder="Enter Your Password"
                                     onFocus={() => focusInput(1)}
                                     onBlur={() => setInputIndex(null)}
@@ -64,7 +124,7 @@ const Login = () => {
                                 </span>
                             </div>
                             <div className="form-group">
-                                <Button className="btn-blue btn-big w-100">Sign In</Button>
+                                <Button type="submit" className="btn-blue btn-big w-100">Sign In</Button>
                             </div>
                             <div className="form-group text-center mb-0">
                                 <Link top='/forgot-password' className="link">FORGOT PASSWORD</Link>

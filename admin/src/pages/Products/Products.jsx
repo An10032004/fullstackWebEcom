@@ -42,6 +42,16 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 
 const Products = () => {
     const context = useContext(MyContext)
+    const [catData, setCatData] = useState([])
+    
+    useEffect(() => {
+            window.scrollTo(0, 0);
+    
+            fetchDataFromApi('/api/category?all=true').then((res) => {
+                setCatData(res)
+                console.log(res)
+            });
+        }, []);
     const [showBy, setShowBy] = useState('');
     const [catBy, setCatBy] = useState('');
     const [productList, setProductList] = useState([]);
@@ -61,7 +71,7 @@ const Products = () => {
 
     const deleteProduct = (id) => {
         console.log(id)
-        deleteData(`/api/products/${id}`).then((res) => {
+        deleteData(`/api/products/${id}`,id).then((res) => {
             fetchDataFromApi("/api/products").then((res) => {
                 setProductList(res.productList);
             });
@@ -185,9 +195,13 @@ const Products = () => {
                                 <MenuItem value="">
                                     <em>None</em>
                                 </MenuItem>
-                                <MenuItem value={10}>Ten</MenuItem>
-                                <MenuItem value={20}>Twenty</MenuItem>
-                                <MenuItem value={30}>Thirty</MenuItem>
+                                {
+                                    catData?.length !== 0 && catData?.map((cat, index) => {
+                                        return (
+                                            <MenuItem value={cat.id} key={index}>{cat.name}</MenuItem>
+                                        )
+                                    })
+                                }
                             </Select>
                             </FormControl>
                         </div>
@@ -200,6 +214,7 @@ const Products = () => {
                                     <th>UID</th>
                                     <th>Product</th>
                                     <th>Category</th>
+                                    <th>Sub Category</th>
                                     <th>Brand</th>
                                     <th>Price</th>
                                     <th>Stock</th>
@@ -232,13 +247,14 @@ const Products = () => {
                                         </div>
                                     </td>
                                     <td>{item.category?.name}</td>
+                                    <td>{item.subCategory}</td>
                                     <td>{item.brand}</td>
                                     <td> 
                                         <del className="old-price">${item.oldPrice}</del>
                                         <span className="new-price text-danger">${item.price}</span>
                                     </td>
                                     <td>{item.countInStock}</td>
-                                    <td><Rating name="read-only" defaultValue={item.rating} precision={0.5} size="small" readOnly /></td>
+                                    <td><Rating name="read-only" value={Number(item.rating) || 0}  precision={0.5} size="small" readOnly /></td>
                                     <td>{format(new Date(item.dateCreated), 'dd/MM/yyyy')}</td>
                                    <td>
                                         {item.isFeatured ? (
@@ -252,7 +268,9 @@ const Products = () => {
                                             <Link to="/product/details">
                                                 <Button className="secondary" color="secondary"><FaEye /></Button>
                                             </Link>
-                                            <Button className="success" color="success"><FaPencilAlt /></Button>
+                                            <Link to={`/product/edit/${item.id}`}>
+                                                <Button className="success" color="success"><FaPencilAlt /></Button>
+                                            </Link>
                                             <Button className="error" color="error" onClick={() => deleteProduct(item._id)}><MdDelete /></Button>
                                         </div>
                                     </td>

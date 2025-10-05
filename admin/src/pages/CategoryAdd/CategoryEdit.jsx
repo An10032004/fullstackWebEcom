@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { emphasize, styled } from "@mui/material";
 import { Breadcrumbs, Chip } from "@mui/material";
 import { MdHome } from "react-icons/md";
@@ -12,7 +12,7 @@ import { IoCloseSharp } from "react-icons/io5";
 // import OutlinedInput from "@mui/material/OutlinedInput";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { FaRegImages } from "react-icons/fa";
-import { fetchDataFromApi, postData } from "../../utils/api";
+import { editData, fetchDataFromApi, postData } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 import { Snackbar } from "@mui/material";
 
@@ -38,7 +38,7 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     };
 });
 
-const ProductUpload = () => {
+const AddSubcategory = () => {
     const navigate = useNavigate();
     const [categoryValue, setCategoryValue] = useState('');
     const [subCategoryValue, setSubCategoryValue] = useState('');
@@ -46,7 +46,15 @@ const ProductUpload = () => {
     const [productRams, setProductRams] = useState([]);
 
     const [ratingValue, setRatingValue] = useState(2);
+    const [catData, setCatData] = useState([])
+    useEffect(() => {
+        window.scrollTo(0, 0);
 
+        fetchDataFromApi('/api/category?all=true').then((res) => {
+            setCatData(res)
+            console.log(res)
+        });
+    }, []);
     const handleChangecategory = (event) => {
         setCategoryValue(event.target.value);
     };
@@ -71,7 +79,7 @@ const ProductUpload = () => {
 
     const [formFields, setFormFields] = useState({
         name: '',
-        subCat:[],
+        subCat: [],
         images: [],
         color: ''
     })
@@ -88,16 +96,16 @@ const ProductUpload = () => {
     }
 
     const handleSubCatChange = (e) => {
-  let value = e.target.value;
+        let value = e.target.value;
 
-  // nếu có dấu phẩy thì tách mảng
-  let arr = value.split(",").map((s) => s.trim()).filter(Boolean);
+        // nếu có dấu phẩy thì tách mảng
+        let arr = value.split(",").map((s) => s.trim()).filter(Boolean);
 
-  setFormFields((prev) => ({
-    ...prev,
-    subCat: arr,
-  }));
-};
+        setFormFields((prev) => ({
+            ...prev,
+            subCat: arr,
+        }));
+    };
     const changeInput = (e) => {
         setFormFields(() => (
             {
@@ -108,24 +116,25 @@ const ProductUpload = () => {
         console.log(formFields)
     }
 
-    
+
 
     const context = useContext(MyContext)
-const addCategory = (e) => {
-    e.preventDefault();
-
-    if (formFields.name === "" || formFields.images.length === 0 || formFields.subCat === "") {
-        context.handleClickVariant('error'); // báo lỗi thiếu thông tin
-        return;
-    }
-
-    postData('/api/category/create', formFields).then(res => {
-        context.handleClickVariant('success'); // báo thành công
-        navigate('/category');
-    }).catch(err => {
-        context.handleClickVariant('error');
-    });
-};
+    const addSUBCategory = (e) => {
+        e.preventDefault();
+        
+       
+        console.log(categoryValue)
+        editData(`/api/category/${categoryValue}/add-subcat`, {
+            subCat: subCategoryValue.split(",").map(s => s.trim())
+        })
+            .then(res => {
+                context.handleClickVariant('success');
+                navigate('/category');
+            })
+            .catch(err => {
+                context.handleClickVariant('error');
+            });
+    };
 
 
 
@@ -133,7 +142,7 @@ const addCategory = (e) => {
         <>
             <div className="right-content w-100">
                 <div className="card shadow border-0 w-100 flex-row p-4 res-col">
-                    <h5 className="mb-0">Add Category</h5>
+                    <h5 className="mb-0">Add Sub Category</h5>
                     <Breadcrumbs aria-label="breadcrumb" className="ml-auto breadcrumbs_">
                         <StyledBreadcrumb
                             component="a"
@@ -152,29 +161,43 @@ const addCategory = (e) => {
                     </Breadcrumbs>
                 </div>
 
-                <form className="form" onSubmit={addCategory}>
+                <form className="form" onSubmit={addSUBCategory}>
                     <div className="row">
                         <div className="col-sm-12">
                             <div className="card p-4">
 
-                                <div className="form-group">
-                                    <h6>Category Name</h6>
-                                    <input type="text" placeholder="type here" name="name" onChange={changeInput} />
-                                </div>
-                                <div className="form-group">
-                                    <h6>Sub Category</h6>
-                                    <input type="text" placeholder="type here" name="subCat" onChange={handleSubCatChange} />
-                                </div>
-                                <div className="form-group">
-                                    <h6>Image Url</h6>
-                                    <input type="text" placeholder="type here" name="images" onChange={addImgURL} />
-                                </div>
 
-                                <div className="form-group">
-                                    <h6>Color</h6>
-                                    <input type="text" placeholder="type here" name="color" onChange={changeInput} />
-                                </div>
+                                <div className="col">
+                                    <div className="form-group">
+                                        <h6>CATEGORY</h6>
+                                        <Select
+                                            value={categoryValue}
+                                            onChange={handleChangecategory}
+                                            displayEmpty
+                                            inputProps={{ 'aria-label': 'Without label' }}
+                                            className="w-100"
+                                        >
+                                            <MenuItem value="">
+                                                (<em value={null}>None</em>)
 
+                                            </MenuItem>
+                                            {
+                                                catData?.length !== 0 && catData?.map((cat, index) => {
+                                                    return (
+                                                        <MenuItem value={cat.id} key={index} >{cat.name}</MenuItem>
+                                                    )
+                                                })
+                                            }
+                                        </Select>
+                                    </div>
+                                </div>
+                                <div className="col">
+                                    <div className="form-group">
+                                        <h6>SUB CATEGORY</h6>
+                                        <input type="text" name="subCat" value={subCategoryValue} onChange={(e) => setSubCategoryValue(e.target.value)} placeholder="e.g. skin, skirt" />
+
+                                    </div>
+                                </div>
 
 
 
@@ -216,5 +239,5 @@ const addCategory = (e) => {
     )
 }
 
-export default ProductUpload;
+export default AddSubcategory;
 
