@@ -20,6 +20,11 @@ const authJwt = require('./helper/jwt');
 const categoryRoutes = require(`./routes/category`)
 const productRoutes = require(`./routes/product`)
 const userRoutes = require(`./routes/user`)
+const cartRoutes = require(`./routes/cart`)
+const reviewsRoutes = require(`./routes/productReviews`)
+const listRoutes = require(`./routes/myList`)
+const orderRoutes = require(`./routes/order`)
+const seachRoutes = require(`./routes/search`)
 //middleware
 // app.use(authJwt());
 //
@@ -27,6 +32,11 @@ app.use('/uploads',express.static('uploads'))
 app.use('/api/category',categoryRoutes)
 app.use('/api/products',productRoutes)
 app.use('/api/user',userRoutes)
+app.use('/api/cart',cartRoutes)
+app.use('/api/reviews',reviewsRoutes)
+app.use('/api/myList',listRoutes)
+app.use('/api/order',orderRoutes)
+app.use('/api/search',seachRoutes)
 
 mongoose.connect(process.env.CONNECTION_STRING, {
     useNewUrlParser: true,

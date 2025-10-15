@@ -21,6 +21,7 @@ import { SnackbarProvider,
 import EditCategory from "./pages/CategoryAdd/CategoryEdit";
 import ProductEdit from "./pages/ProductUpload/ProductEdit";
 import AddSubcategory from "./pages/CategoryAdd/CategoryEdit";
+import AdminOrders from "./pages/Orders/Order";
 const MyContext = createContext();
 
 function AppContent() {
@@ -149,13 +150,14 @@ function AppContent() {
                                 <Route path="/login" exact={true} element={<Login />} />
                                 <Route path="/signUp" exact={true} element={<SignUp />} />
                                 <Route path="/products" exact={true} element={<Products />} />
-                                <Route path="/product/details" exact={true} element={<ProductDetails />} />
+                                <Route path="/product/details/:id" exact={true} element={<ProductDetails />} />
                                 <Route path="/product/upload" exact={true} element={<ProductUpload />} />
                                 <Route path="/product/edit/:id" exact={true} element={<ProductEdit />} />
                                 <Route path="/category/add" exact={true} element={<CategoryAdd />} />
                                 <Route path="/category/edit/:id" exact={true} element={<EditCategory />} />
                                 <Route path="/category" exact={true} element={<Categories />} />
                                 <Route path="/category/edit-subCat" exact={true} element={<AddSubcategory />} />
+                                <Route path="/order" exact={true} element={<AdminOrders />} />
                             </Routes>
                         </div>
                     </div>

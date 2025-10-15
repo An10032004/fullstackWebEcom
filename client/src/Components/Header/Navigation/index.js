@@ -33,8 +33,9 @@ const Navigation = ({catData}) => {
                                                         {
                                                             item?.subCat?.length > 0 && item?.subCat?.map((sub,index) => {
                                                                 return (
-                                                                    <Link to={'/'}> <Button>{sub}</Button> </Link>
-                                                                )
+<Link to={`/search?q=${encodeURIComponent(sub)}`} key={index}>
+      <Button>{sub}</Button>
+    </Link>                                                                )
                                                             })
                                                         }
                                                     </div>
@@ -72,8 +73,9 @@ const Navigation = ({catData}) => {
                                                         {
                                                             item?.subCat?.length > 0 && item?.subCat?.map((sub,index) => {
                                                                 return (
-                                                                    <Link to={'/'}> <Button>{sub}</Button> </Link>
-                                                                )
+<Link to={`/search?q=${encodeURIComponent(sub)}`} key={index}>
+      <Button>{sub}</Button>
+    </Link>                                                                )
                                                             })
                                                         }
                                                     </div>

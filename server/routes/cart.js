@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pLimit = require('p-limit');
 const cloudinary = require('cloudinary').v2;
-const { Cart } = require('../models/cart');
+const  {Cart} = require('../models/cart');
 
 // Cấu hình Cloudinary
 cloudinary.config({
@@ -62,64 +62,80 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+router.delete("/clear/:userId", async (req, res) => {
+  try {
+    const {Id } = req.params.userId; // hoặc email
+    await Cart.deleteMany({ Id });
+    res.status(200).json({ success: true, message: "Cart cleared successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
 
 // 🟢 Tạo mới cart item
-router.post('/create', async (req, res) => {
+router.post('/add', async (req, res) => {
   try {
-    const limit = pLimit(2);
-    const { name, color, images } = req.body;
+    const { productTitle, image, rating, price, quantity, subTotal, productId, userId } = req.body;
 
-    if (!name) return res.status(400).json({ success: false, error: 'Name is required' });
+    if (!productId || !userId) {
+      return res.status(400).json({ success: false, message: "Missing productId or userId" });
+    }
 
-    // Upload ảnh lên Cloudinary
-    const uploadTasks = (images || []).map((img) =>
-      limit(async () => {
-        const result = await cloudinary.uploader.upload(img);
-        return result.secure_url;
-      })
-    );
+    // 🔍 Kiểm tra sản phẩm này đã có trong giỏ hàng của user chưa
+    const existingItem = await Cart.findOne({ userId, productId });
 
-    const uploadedImages = await Promise.all(uploadTasks);
+    if (existingItem) {
+      // Nếu đã có thì cập nhật số lượng + subtotal
+    
+      return res.status(200).json({ success: false, message: "product already added", cart: existingItem });
+    }
 
-    const cartItem = new Cart({
-      name,
-      color,
-      images: uploadedImages,
+    // 🔹 Nếu chưa có thì tạo mới
+    const newCartItem = new Cart({
+      productTitle,
+      image,
+      rating,
+      price,
+      quantity: quantity || 1,
+      subTotal,
+      productId,
+      userId,
     });
 
-    await cartItem.save();
+    await newCartItem.save();
+    res.status(201).json({ success: true, message: "Added new item to cart", cart: newCartItem });
 
-    res.status(201).json({ success: true, cartItem });
   } catch (err) {
-    console.error('POST /cart/create error:', err);
+    console.error('POST /cart/add error:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
+
 // 🟡 Cập nhật cart item
 router.put('/:id', async (req, res) => {
   try {
-    const limit = pLimit(2);
-    const { name, color, images } = req.body;
+    const { productTitle,image,rating,price,quantity,subTotal,productId,userId } = req.body;
 
-    const uploadTasks = (images || []).map((img) =>
-      limit(async () => {
-        const result = await cloudinary.uploader.upload(img);
-        return result.secure_url;
-      })
-    );
+    
 
-    const uploadedImages = await Promise.all(uploadTasks);
 
     const updated = await Cart.findByIdAndUpdate(
       req.params.id,
-      { name, color, images: uploadedImages },
-      { new: true }
+      {productTitle,
+      image, // Vì schema images: String (1 ảnh), bạn có thể sửa lại thành [String] nếu muốn nhiều ảnh
+      rating,
+      price,
+      quantity: quantity || 1,
+      subTotal,
+      productId,
+      userId,}
     );
 
     if (!updated) return res.status(404).json({ success: false, error: 'Cart item not found' });
 
-    res.status(200).json({ success: true, cartItem: updated });
+    res.status(200).json({ success: true, cartList: updated });
   } catch (err) {
     console.error('PUT /cart/:id error:', err);
     res.status(500).json({ success: false, error: err.message });

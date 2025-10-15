@@ -15,8 +15,8 @@ export const postData = async (url, formData) => {
 };
 
 export const editData = async (url, formData) => {
-  const { res } = await axios.put(`http://localhost:4000${url}`, formData);
-  return res;
+  const { data } = await axios.put(`http://localhost:4000${url}`, formData);
+  return data;
 };
 
 export const deleteData = async (url, formData) => {

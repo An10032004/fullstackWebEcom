@@ -5,6 +5,44 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const multer = require('multer');
+const fs = require('fs');
+
+
+let avatarFileName = '';
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads');
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = `${Date.now()}_${file.originalname}`;
+    avatarFileName = uniqueName;
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({ storage });
+
+// 🧩 Route upload avatar
+router.post('/upload/upload-avatar', upload.single('avatar'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ success: false, msg: 'No file uploaded' });
+
+    res.status(200).json({
+      success: true,
+      avatar: avatarFileName
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, msg: 'Upload failed' });
+  }
+});
+
+
+
+
+
 
 router.post('/signup',async (req,res) => {
     const {name,phone,email,password} = req.body
@@ -137,7 +175,7 @@ router.get('/get/count', async (req, res) => {
 // UPDATE user by id
 router.put('/:id', async (req, res) => {
     try {
-        const { name, phone, email, password } = req.body;
+        const { name, phone, email, password,avatar } = req.body;
 
         // nếu có password mới thì hash lại
         const userExist = await User.findById(req.params.id)
@@ -150,6 +188,14 @@ router.put('/:id', async (req, res) => {
             newPassword = userExist.password
             updatedData.password = newPassword
         }
+
+           if (avatar) {
+      // Xóa avatar cũ nếu có
+      if (userExist.avatar && fs.existsSync(`uploads/${userExist.avatar}`)) {
+        fs.unlinkSync(`uploads/${userExist.avatar}`);
+      }
+      updatedData.avatar = avatar;
+    }
 
         const updatedUser = await User.findByIdAndUpdate(
             req.params.id,
@@ -171,4 +217,17 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+router.post('/check-password/:id', async (req, res) => {
+    try {
+        const { password } = req.body;
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ valid: false, msg: "User not found" });
+
+        const isValid = await bcrypt.compare(password, user.password);
+        res.status(200).json({ valid: isValid });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ valid: false, msg: "Error checking password" });
+    }
+});
 module.exports = router

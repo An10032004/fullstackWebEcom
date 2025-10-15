@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const cartSchema = new mongoose.Schema({
+const myListSchema = new mongoose.Schema({
   productTitle: {
     type: String,
     required: true,
@@ -17,14 +17,6 @@ const cartSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  quantity: {
-    type: Number,
-    default: 1,
-  },
-  subTotal: {
-    type: Number,
-    require:true
-  },
   productId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product", // tham chiếu tới Product
@@ -37,14 +29,14 @@ const cartSchema = new mongoose.Schema({
   },
 });
 
-cartSchema.virtual('id').get(function () {
+myListSchema.virtual('id').get(function () {
     return this._id.toHexString();
 });
 
-cartSchema.set('toJSON', {
+myListSchema.set('toJSON', {
     virtuals: true,
 });
 
-exports.Cart = mongoose.model('Cart', cartSchema);
+exports.MyList = mongoose.model('MyList', myListSchema);
 
-exports.cartSchema = this.cartSchema;
+exports.myListSchema = this.myListSchema;

@@ -8,7 +8,7 @@ import ProductModal from "../ProductModal";
 import Slider from 'react-slick'
 import { Link } from "react-router-dom";
 import { MyContext } from "../../App";
-import { fetchDataFromApi } from "../../utils/api";
+import { fetchDataFromApi, postData } from "../../utils/api";
 
 const ProductItem = (props) => {
 
@@ -37,7 +37,7 @@ const ProductItem = (props) => {
     const [isHover, setIsHover] = useState(false)
 
     const sliderRef = useRef()
-
+    const {showAlert } = useContext(MyContext)
     var settings = {
     dots: true,
     infinite: true,
@@ -65,7 +65,46 @@ const ProductItem = (props) => {
             }
         })
     }
+    const addToMyList = async (item) => {
+        console.log(item)
+                const user = JSON.parse(localStorage.getItem('user'))
 
+    if (!user?.userId) {
+      showAlert("Please log in to use wishlist!", "warning");
+      return;
+    }
+
+    if (!item) {
+      showAlert("No product selected!", "error");
+      return;
+    }
+
+    try {
+      const body = {
+        productTitle: item.name,
+        image: item.images?.[0],
+        rating: item.rating || 0,
+        price: item.price,
+        productId: item.id,
+        userId: user?.userId,
+      };
+
+     postData("/api/mylist/add", body).then((res) => {
+        if (res?.success === true) {
+      showAlert("Added to your wishlist!", "success");
+    } else {
+      showAlert(res?.message || "Product already in wishlist!", "warning");
+    }
+       });
+
+    
+
+      
+    } catch (err) {
+      console.error("Error adding to my list:", err);
+      showAlert("Failed to add to wishlist", "error");
+    }
+  };
     return (
         <>
             <div className={`item productItem ${props.itemView}`} style={{ padding: "0 10px" }}
@@ -87,7 +126,7 @@ const ProductItem = (props) => {
 
                     <div className="actions">
                         <Button onClick={() => ViewProductDetail(props.item?.id)}> <TfiFullscreen /></Button>
-                        <Button> <IoMdHeartEmpty /></Button>
+                        <Button> <IoMdHeartEmpty onClick={() => addToMyList(props.item)}/></Button>
                     </div>
                 </div>
                 <div className="info">

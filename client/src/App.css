@@ -1400,3 +1400,28 @@ form {
   width: 30px;
   margin-right: 10px;
 }
+
+.table-striped {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-striped th,
+.table-striped td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.table-striped th {
+  background-color: #1976d2; /* màu header */
+  color: #fff;
+}
+
+.table-striped tr:nth-child(even) {
+  background-color: #f3f3f3; /* màu xen kẽ */
+}
+
+.table-striped tr:hover {
+  background-color: #e0f0ff; /* highlight khi hover */
+}

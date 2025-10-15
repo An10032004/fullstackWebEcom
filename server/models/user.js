@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       
     },
+     avatar: { type: String, default: '' },
    isAdmin: {
     type: Boolean,
     default: false, // mặc định user thường

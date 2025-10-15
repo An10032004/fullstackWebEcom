@@ -10,9 +10,55 @@ import { IoIosHeartEmpty } from 'react-icons/io'; // For Ionicons
 import { MdOutlineCompareArrows } from 'react-icons/md'; // For Material Design Icons
 import QuantityBox from "../QuantityBox"
 import ProductZoom from "../ProductZoom"
-
+import { MyContext } from "../../App";
+import { useContext } from "react";
+import { postData } from "../../utils/api";
 const ProductModal = ({ open, closeProductModal ,product}) => {
+        const {showAlert} = useContext(MyContext)
+
     if (!product) return null;
+
+
+        const addToMyList = async (item) => {
+            console.log(item)
+                    const user = JSON.parse(localStorage.getItem('user'))
+    
+        if (!user?.userId) {
+          showAlert("Please log in to use wishlist!", "warning");
+          return;
+        }
+    
+        if (!item) {
+          showAlert("No product selected!", "error");
+          return;
+        }
+    
+        try {
+          const body = {
+            productTitle: item.name,
+            image: item.images?.[0],
+            rating: item.rating || 0,
+            price: item.price,
+            productId: item.id,
+            userId: user?.userId,
+          };
+    
+         postData("/api/mylist/add", body).then((res) => {
+            if (res?.success === true) {
+          showAlert("Added to your wishlist!", "success");
+        } else {
+          showAlert(res?.message || "Product already in wishlist!", "warning");
+        }
+           });
+    
+        
+    
+          
+        } catch (err) {
+          console.error("Error adding to my list:", err);
+          showAlert("Failed to add to wishlist", "error");
+        }
+      };
     return (
         <Dialog open={open} className="productModal" onClose={closeProductModal} hideBackdrop           // không che nền
   disableScrollLock >
@@ -53,7 +99,7 @@ const ProductModal = ({ open, closeProductModal ,product}) => {
                         
                     </div>
                     <div className='d-flex align-items-center mt-4 actions'>
-  <Button className='btn-round btn-sml' variant="outlined">
+  <Button onClick={() => addToMyList(product)} className='btn-round btn-sml' variant="outlined">
     <IoIosHeartEmpty /> &nbsp; ADD TO WISHLIST
   </Button>
   <Button className='btn-round btn-sml ml-3' variant="outlined">
