@@ -1,7 +1,8 @@
 import axios from "axios";
 export const fetchDataFromApi = async (url) => {
+// https://fullstackecomserver.onrender.com
   try {
-    const { data } = await axios.get('http://localhost:4000' + url);
+    const { data } = await axios.get(`http://localhost:4000` + url);
     return data;
   } catch (error) {
     console.log(error);
@@ -10,7 +11,7 @@ export const fetchDataFromApi = async (url) => {
 };
 
 export const postData = async (url, formData) => {
-  const { data } = await axios.post("http://localhost:4000" + url, formData);
+  const { data } = await axios.post(`http://localhost:4000` + url, formData);
   return data;
 };
 

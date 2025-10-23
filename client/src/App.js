@@ -75,17 +75,23 @@ function App() {
     })
   },[])
 
-  useEffect(() => {
-        const token = localStorage.getItem("token")
-        if(token!== null && token !== ""){
-            setIsLogin(true)
+ useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    setIsLogin(true);
+    try {
+      const userObj = JSON.parse(localStorage.getItem("user") || "{}");
+      setUser(userObj);
+    } catch (err) {
+      console.error("Failed to parse user from localStorage:", err);
+      localStorage.removeItem("user");
+      setUser({ name: "", email: "" });
+    }
+  } else {
+    setIsLogin(false);
+  }
+}, []);
 
-            const userObj = JSON.parse(localStorage.getItem("user"))
-            setUser(userObj)
-        }else{
-            setIsLogin(false)
-        }
-    },[isLogin])
 
     const [orderData,setOrderData] = useState([])
 
@@ -103,11 +109,19 @@ function App() {
 }, []);
 
 useEffect(() => {
-   fetchDataFromApi(`/api/cart`).then((res) => {
-    setCartData(res.cartList || []);
-   });
-      
-},[])
+  fetchDataFromApi(`/api/cart`)
+    .then((res) => {
+      if (res && Array.isArray(res.cartList)) {
+        setCartList(res.cartList);
+      } else {
+        setCartList([]);
+      }
+    })
+    .catch((err) => {
+      console.error("Error fetching cart:", err);
+      setCartList([]);
+    });
+}, []);
 
 
   const values={

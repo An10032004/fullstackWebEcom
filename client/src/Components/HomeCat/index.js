@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import { Navigation } from 'swiper/modules'
+import './homeCat.css'
 const HomeCat = (props) => {
 
     const [catData,setCatData] = useState([])
@@ -35,7 +36,7 @@ const HomeCat = (props) => {
 
             <section className="homeCat">
 
-                <div className="container-fluid" style={{ padding: '0 45px' }}>
+                <div className="container-fluid" style={{ padding: '0 45px',textAlign:'center'}}>
                     <h3 className="hd ml-3" >Feature categories</h3>
                     <Swiper
                         slidesPerView={10}

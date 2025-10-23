@@ -32,8 +32,8 @@ const Header = () => {
     fetchDataFromApi("/api/category").then((res) => {
       const categories = res.categoryList || [];
       setCatData(categories);
-    }, [])
-  })
+    })
+  }, [])
 
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -58,11 +58,21 @@ const Header = () => {
 
       const [user1,setUser1] = useState({})
 useEffect(() => {
-        const user = JSON.parse(localStorage.getItem("user"))
-        fetchDataFromApi(`/api/user/${user.userId}`).then((res) => {
-            setUser1(res)
-        })
-    },[])
+  const userData = localStorage.getItem("user");
+  if (!userData) return; // ✅ Nếu chưa đăng nhập thì bỏ qua
+  
+  try {
+    const user = JSON.parse(userData);
+    if (user?.userId) {
+      fetchDataFromApi(`/api/user/${user.userId}`).then((res) => {
+        setUser1(res);
+      });
+    }
+  } catch (err) {
+    console.error("Invalid user data in localStorage", err);
+  }
+}, []);
+
   return (
     <div className="headerWrapper">
       <div className="top-strip bg-blue">
