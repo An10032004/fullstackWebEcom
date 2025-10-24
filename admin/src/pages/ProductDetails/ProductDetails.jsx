@@ -176,7 +176,7 @@ const ProductDetails = () => {
                   {productData?.images?.length > 0 ? (
                     productData.images.map((img, i) => (
                       <div className="item" key={i}>
-                        <img src={`http://localhost:4000/uploads/${img}`} alt="product" className="w-100" />
+                        <img src={`${img}`} alt="product" className="w-100" />
                       </div>
                     ))
                   ) : (
@@ -195,7 +195,7 @@ const ProductDetails = () => {
                   {productData?.images?.length > 0 ? (
                     productData.images.map((img, i) => (
                       <div className="item" key={i} onClick={() => goToSlider(i)}>
-                        <img src={`http://localhost:4000/uploads/${img}`} alt={`thumb-${i}`} className="w-100" />
+                        <img src={`${img}`} alt={`thumb-${i}`} className="w-100" />
                       </div>
                     ))
                   ) : (

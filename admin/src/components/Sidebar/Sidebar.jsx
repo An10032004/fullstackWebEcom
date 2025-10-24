@@ -121,100 +121,20 @@ const Sidebar = () => {
                             </Button>
                         </Link>
                     </li>
-                    <li>
-                        <Link to="/">
-                            <Button className="w-100">
-                                <span className="icons"><FaCartArrowDown /></span>
-                                Orders
-                                <span className="arrows"><FaAngleRight /></span>
-                            </Button>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/">
-                            <Button className="w-100">
-                                <span className="icons"><MdEmail /></span>
-                                Messages
-                                <span className="arrows"><FaAngleRight /></span>
-                            </Button>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/">
-                            <Button className="w-100">
-                                <span className="icons"><FaBell /></span>
-                                Notificatrions
-                                <span className="arrows"><FaAngleRight /></span>
-                            </Button>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/">
-                            <Button className="w-100">
-                                <span className="icons"><IoMdSettings /></span>
-                                Setting
-                                <span className="arrows"><FaAngleRight /></span>
-                            </Button>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/">
-                            <Button className="w-100">
-                                <span className="icons"><MdDashboard /></span>
-                                Dashboard
-                                <span className="arrows"><FaAngleRight /></span>
-                            </Button>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/">
-                            <Button className="w-100">
-                                <span className="icons"><FaProductHunt /></span>
-                                Products
-                                <span className="arrows"><FaAngleRight /></span>
-                            </Button>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/">
-                            <Button className="w-100">
-                                <span className="icons"><FaCartArrowDown /></span>
-                                Orders
-                                <span className="arrows"><FaAngleRight /></span>
-                            </Button>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/">
-                            <Button className="w-100">
-                                <span className="icons"><MdEmail /></span>
-                                Messages
-                                <span className="arrows"><FaAngleRight /></span>
-                            </Button>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/">
-                            <Button className="w-100">
-                                <span className="icons"><FaBell /></span>
-                                Notificatrions
-                                <span className="arrows"><FaAngleRight /></span>
-                            </Button>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/">
-                            <Button className="w-100">
-                                <span className="icons"><IoMdSettings /></span>
-                                Setting
-                                <span className="arrows"><FaAngleRight /></span>
-                            </Button>
-                        </Link>
-                    </li>
+                    
                 </ul>
                 <br />
                 <div className="logout-wrapper">
-                    <div className="logout-box">
+                    <div 
+                        onClick={() => {
+            // ✅ Xử lý Logout
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            context.setIsLogin(false);
+            context.setUser({ name: "", email: "" ,id:""});
+            context.showAlert("Đăng xuất thành công!", "success");
+          }}
+                    className="logout-box">
                         <Button variant="contained"> <IoMdLogOut /> Logout</Button>
                     </div>
                 </div>

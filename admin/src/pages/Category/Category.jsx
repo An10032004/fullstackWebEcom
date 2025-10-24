@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { CircularProgress, emphasize, styled } from "@mui/material";
 import { Breadcrumbs, Chip } from "@mui/material";
 import { MdHome } from "react-icons/md";
@@ -26,6 +26,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { MyContext } from "../../App";
 // breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     const backgroundColor =
@@ -136,6 +137,7 @@ const Categories = () => {
         console.log(res);
     });
 };
+        const { stats } = useContext(MyContext);
 
     return (
         <>
@@ -170,13 +172,13 @@ const Categories = () => {
                     <div className="col-md-12">
                         <div className="dashboard-box-wrapper d-flex">
                             <button className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textSizeMedium
-                                MuiButton-colorPrimary dashboard-box css-1ujsas3" type="button" style={{ backgroundImage: 'linear-gradient(to right, rgb(29, 162, 86), rgb(72, 212, 131))' }}
-                            >
+                                MuiButton-colorPrimary dashboard-box css-1ujsas3" type="button" style={{backgroundImage: 'linear-gradient(to right, rgb(29, 162, 86), rgb(72, 212, 131))'}}
+                                >
                                 <span className="chart"> <TrendingUpIcon /> </span>
                                 <div className="d-flex w-100">
                                     <div className="col1">
-                                        <h4 className="text-white mb-0">Total User</h4>
-                                        <span className="text-white">277</span>
+                                        <h4 className="text-white mb-0">Total Products</h4>
+                                        <span className="text-white">{stats.totalProducts}</span>
                                     </div>
                                     <div className="ml-auto">
                                         <span className="icons">
@@ -186,14 +188,14 @@ const Categories = () => {
                                 </div>
                             </button>
                             <button className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textSizeMedium
-                                MuiButton-colorPrimary dashboard-box css-1ujsas3" type="button"
-                                style={{ backgroundImage: 'linear-gradient(to right, rgb(192, 18, 226), rgb(235, 100, 254))' }}
-                            >
+                                MuiButton-colorPrimary dashboard-box css-1ujsas3" type="button" 
+                                style={{backgroundImage: 'linear-gradient(to right, rgb(192, 18, 226), rgb(235, 100, 254))'}}
+                                >
                                 <span className="chart"> <TrendingDownIcon /> </span>
                                 <div className="d-flex w-100">
                                     <div className="col1">
-                                        <h4 className="text-white mb-0">Total User</h4>
-                                        <span className="text-white">277</span>
+                                        <h4 className="text-white mb-0">Total Price</h4>
+                                        <span className="text-white">{stats.totalPrice}</span>
                                     </div>
                                     <div className="ml-auto">
                                         <span className="icons">
@@ -203,14 +205,14 @@ const Categories = () => {
                                 </div>
                             </button>
                             <button className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textSizeMedium
-                                MuiButton-colorPrimary dashboard-box css-1ujsas3" type="button"
-                                style={{ backgroundImage: 'linear-gradient(to right, rgb(44, 120, 229), rgb(96, 175, 245))' }}
-                            >
+                                MuiButton-colorPrimary dashboard-box css-1ujsas3" type="button" 
+                                style={{backgroundImage: 'linear-gradient(to right, rgb(44, 120, 229), rgb(96, 175, 245))'}}
+                                >
                                 <span className="chart"> <TrendingDownIcon /> </span>
                                 <div className="d-flex w-100">
                                     <div className="col1">
-                                        <h4 className="text-white mb-0">Total User</h4>
-                                        <span className="text-white">277</span>
+                                        <h4 className="text-white mb-0">Total Feature</h4>
+                                        <span className="text-white">{stats.totalFeatured}</span>
                                     </div>
                                     <div className="ml-auto">
                                         <span className="icons">

@@ -72,7 +72,9 @@ const Login = () => {
                 localStorage.setItem("user",JSON.stringify(user)) 
                 
                 context.showAlert("Đăng Nhapthành công!", "success");
-                navigate('/');
+                context.setUser(user);
+context.setIsLogin(true);
+navigate('/', { replace: true });
                 setFormField({
                 email: "",
                 password: "",

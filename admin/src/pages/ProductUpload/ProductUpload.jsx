@@ -104,7 +104,7 @@ const ProductUpload = () => {
         }
 
         const objectUrls = tmp;
-        console.log(objectUrls)
+        
          setPreviews((prev) => [...prev, ...objectUrls]);
 
         // free memory
@@ -124,7 +124,7 @@ const ProductUpload = () => {
         fetchDataFromApi(`/api/category/${event.target.value}`).then((res) => {
             setsubCatData(res.subCat)  
 
-            console.log(res.subCat)
+           
         });
     };
 
@@ -187,7 +187,7 @@ const handleChangeProductWeight = (event) => {
 `;
         setProductImagesArr(prevArray => [...prevArray, productImages.current.value]);
 
-        console.log(formFields)
+        
         imgGrid.insertAdjacentHTML('beforeend', imgData);
 
         productImages.current.value = "";
@@ -196,10 +196,43 @@ const handleChangeProductWeight = (event) => {
     const inputChange = (e) => {
         setFormField(() => ({ ...formFields, [e.target.name]: e.target.value }))
     }
+const onChangeFile = async (e, apiEndPoint) => {
+  try {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    const formData = new FormData();
+    files.forEach((file) => formData.append("images", file));
+
+    const res = await postData(apiEndPoint, formData);
+    console.log("✅ Cloudinary response:", res);
+
+    if (res?.success && Array.isArray(res.images) && res.images.length > 0) {
+      // 🟢 Gộp tất cả ảnh mới vào formFields
+      setFormField((prev) => {
+        const updatedImages = [...(prev.images || []), ...res.images];
+        console.log("🟢 Updated formField images:", updatedImages);
+        return { ...prev, images: updatedImages };
+      });
+
+      // 🟢 Preview ảnh mới (chỉ giữ string)
+      setPreviews((prev) => [...prev, ...res.images]);
+    }
+  } catch (error) {
+    console.error("❌ Upload error:", error);
+  }
+};
+
+
+
+useEffect(() => {
+  console.log("🟢 formFields updated:", formFields);
+}, [formFields]);
 
     const addProduct = (e) => {
         e.preventDefault()
         setIsLoading(true)
+        
         formData.append('name', formFields.name);
         formData.append('description', formFields.description);
         formData.append('brand', formFields.brand);
@@ -234,31 +267,12 @@ const handleChangeProductWeight = (event) => {
                 productWeight: []
             })
             navigate('/products')
-            console.log(res)
+            
         })
     }
 
 
-    const onChangeFile = async (e, apiEndPoint) => {
-        try {
-            const imgArr = []
-            const files = e.target.files
-            setImgFiles(e.target.files)
-            for (var i = 0; i < files.length; i++) {
-                const file = files[i]
-                imgArr.push(file)
-                formData.append('images', file)
-            }
-
-            setFiles(imgArr)
-            postData(apiEndPoint, formData).then(res => {
-                console.log(res)
-            })
-
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    
 
     return (
         <>

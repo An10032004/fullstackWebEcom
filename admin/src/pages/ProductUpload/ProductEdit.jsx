@@ -98,6 +98,7 @@ const ProductEdit = () => {
             setFormField({
                 name: res.name,
                 description: res.description,
+                images: res.images || [],
                 brand: res.brand,
                 price: res.price,
                 oldPrice: res.oldPrice,
@@ -111,6 +112,7 @@ const ProductEdit = () => {
                 productSIZE: res.productSIZE || [],
                 productWeight: res.productWeight || []
             });
+            setPreviews(res.images || [])
             setRatingValue(res.rating)
             setCategoryValue(res.category)
             setSubCategoryValue(res.subCategory || "")
@@ -266,33 +268,40 @@ const ProductEdit = () => {
     }
 
 
-    const onChangeFile = async (e, apiEndPoint) => {
-        try {
-            const imgArr = [];
-            const files = e.target.files;
+   const onChangeFile = async (e, apiEndPoint) => {
+  try {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
 
-            //const fd = new FormData();
-            for (var i = 0; i < files.length; i++) {
-                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
-                    setImgFiles(files);
-                    const file = files[i];
-                    imgArr.push(file);
-                    formData.append('images', file);
-                    setFiles(imgArr);
+    // ✅ Dùng FormData cục bộ (tránh dùng biến global `formData`)
+    const localFormData = new FormData();
+    files.forEach((file) => {
+      if (["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type)) {
+        localFormData.append("images", file);
+      }
+    });
 
-                    console.log(imgArr);
-                    setIsSelectedImages(true);
-                    postData(apiEndPoint, formData, id).then((res) => {
-                        console.log(res.images)
-                    });
-                }
-            }
+    // ✅ Gọi API upload
+    const res = await postData(apiEndPoint, localFormData);
 
+    console.log("✅ Cloudinary response:", res);
 
-        } catch (error) {
-            console.log(error);
-        }
+    // ✅ Nếu upload thành công
+    if (res?.success && Array.isArray(res.images)) {
+      setFormField((prev) => {
+        const updatedImages = [...(prev.images || []), ...res.images];
+        console.log("🟢 Updated formField images:", updatedImages);
+        return { ...prev, images: updatedImages };
+      });
+
+      // ✅ Nếu bạn có state hiển thị preview ảnh
+      setPreviews((prev) => [...prev, ...res.images]);
     }
+  } catch (error) {
+    console.error("❌ Upload error:", error);
+  }
+};
+
 
     return (
         <>
@@ -541,12 +550,9 @@ const ProductEdit = () => {
                                         {previews.length !== 0 && previews?.map((img, index) => {
                                             return (
                                                 <div className='uploadBox' key={index}>
-                                                    {
-                                                        isSelectedImages === true ?
-                                                            <img src={`${img}`} className="w-100" />
-                                                            :
-                                                            <img src={`${context.baseUrl}/uploads/${img}`} className="w-100" />
-                                                    }
+                                                    <div className="uploadBox" key={index}>
+    <img src={img} alt={`preview-${index}`} className="w-100" />
+  </div>
                                                 </div>
                                             )
                                         })}

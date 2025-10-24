@@ -7,6 +7,11 @@ const pLimit = require('p-limit')
 const cloudinary = require('cloudinary').v2
 //upload image
 const multer = require('multer')
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 var imagesArr = []
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -18,17 +23,42 @@ const storage = multer.diskStorage({
     }
 })
 const upload = multer({storage:storage})
-router.post('/upload', upload.array("images"), async (req, res) => {
-    imagesArr = [];
-    const files = req.files;
 
-    for (let i = 0; i < files.length; i++) {
-        imagesArr.push(files[i].filename);
+router.post("/upload", upload.array("images", 10), async (req, res) => {
+  try {
+    const files = req.files;
+    if (!files || files.length === 0) {
+      return res.status(400).json({ success: false, message: "Không có file nào được upload." });
     }
 
-    console.log(imagesArr);
+    const limit = pLimit(3); // Giới hạn tối đa 3 file upload cùng lúc
 
-    res.json({images:imagesArr});
+    const uploadPromises = files.map((file) =>
+      limit(async () => {
+        try {
+          const result = await cloudinary.uploader.upload(file.path, {
+            folder: "ecommerce_products",
+            timeout: 120000, // ⏱️ tăng thời gian timeout lên 120s
+          });
+          fs.unlinkSync(file.path); // Xóa file local sau khi upload xong
+          return result.secure_url;
+        } catch (err) {
+          console.error(`❌ Upload thất bại: ${file.originalname}`, err.message);
+          throw err;
+        }
+      })
+    );
+
+    // Chờ tất cả upload hoàn tất
+    const uploadedUrls = await Promise.all(uploadPromises);
+
+    console.log("✅ Uploaded to Cloudinary:", uploadedUrls);
+    return res.status(200).json({ success: true, images: uploadedUrls });
+
+  } catch (err) {
+    console.error("❌ Upload error:", err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
 });
 //end upload
 // Lấy danh sách product (có hỗ trợ ?all=true và phân trang)
@@ -206,7 +236,7 @@ router.post('/create', async (req, res) => {
     let product = new Product({
          name: req.body.name,
         description: req.body.description,
-        images: imagesArr,
+        images: req.body.images || [],
         brand: req.body.brand,
         oldPrice:req.body.oldPrice,
         price: req.body.price,
@@ -234,15 +264,7 @@ router.post('/create', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
 
-    const product = await Product.findById(req.params.id)
-    const images = product.images
-
-    if (images.length !== 0) {
-        for (const image of images) {
-            fs.unlinkSync(`uploads/${image}`);
-        }
-        }
-
+    
     const deleteProduct = await Product.findByIdAndDelete(req.params.id);
     if (!deleteProduct) {
         return res.status(404).json({
@@ -258,71 +280,102 @@ router.delete('/:id', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    // Lấy product cũ
-    const oldProduct = await Product.findById(req.params.id);
-    if (!oldProduct) {
-      return res.status(404).json({
-        message: 'Product not found!',
-        status: false
-      });
-    }
-    let finalImages = oldProduct.images;
-    // Nếu product có ảnh cũ thì xoá trong thư mục uploads
-    if (imagesArr.length > 0) {
-      // Xoá ảnh cũ trong thư mục uploads
-      if (oldProduct.images && oldProduct.images.length > 0) {
-        for (const image of oldProduct.images) {
-          const filePath = `uploads/${image}`;
-          if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
-          }
-        }
-      }
+    const productId = req.params.id;
+    const body = req.body;
 
-      // Gán ảnh mới
-      finalImages = imagesArr;
+    // 🔍 Kiểm tra sản phẩm có tồn tại không
+    const existingProduct = await Product.findById(productId);
+    if (!existingProduct) {
+      return res.status(404).json({ success: false, message: "Product not found" });
     }
 
-    // Update product với ảnh mới từ imagesArr
-    const product = await Product.findByIdAndUpdate(
-      req.params.id,
+    // 🖼️ Nếu có mảng ảnh mới từ frontend (upload lên Cloudinary xong)
+    // thì dùng ảnh mới, ngược lại giữ nguyên ảnh cũ
+    let updatedImages = body.images && body.images.length > 0
+      ? body.images
+      : existingProduct.images;
+
+    // ✏️ Cập nhật sản phẩm
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
       {
-        name: req.body.name,
-        description: req.body.description,
-        images: finalImages,
-        brand: req.body.brand,
-        price: req.body.price,
-        category: req.body.category,
-        subCategory: req.body.subCategory,
-        countInStock: req.body.countInStock,
-        rating: req.body.rating,
-        numReviews: req.body.numReviews,
-        isFeatured: req.body.isFeatured,
-        discount:req.body.discount,
-        productRAMS:req.body.productRAMS,
-        productSIZE:req.body.productSIZE,
-        productWeight:req.body.productWeight
+        name: body.name || existingProduct.name,
+        description: body.description || existingProduct.description,
+        images: updatedImages,
+        brand: body.brand || existingProduct.brand,
+        price: body.price || existingProduct.price,
+        oldPrice: body.oldPrice || existingProduct.oldPrice,
+        category: body.category || existingProduct.category,
+        subCategory: body.subCategory || existingProduct.subCategory,
+        countInStock: body.countInStock || existingProduct.countInStock,
+        rating: body.rating || existingProduct.rating,
+        isFeatured: body.isFeatured ?? existingProduct.isFeatured,
+        discount: body.discount || existingProduct.discount,
+        productRAMS: body.productRAMS?.length ? body.productRAMS : existingProduct.productRAMS,
+        productSIZE: body.productSIZE?.length ? body.productSIZE : existingProduct.productSIZE,
+        productWeight: body.productWeight?.length ? body.productWeight : existingProduct.productWeight
       },
       { new: true }
     );
 
-    if (!product) {
-      return res.status(404).json({
-        message: 'The product cannot be updated!',
-        status: false
-      });
+    if (!updatedProduct) {
+      return res.status(500).json({ success: false, message: "Product update failed" });
     }
 
-    res.status(200).json({
-      message: 'The product is updated!',
-      status: true,
-      product
+    return res.status(200).json({
+      success: true,
+      message: "✅ Product updated successfully",
+      product: updatedProduct
     });
 
   } catch (error) {
-    console.error('PUT /:id error:', error);
-    res.status(500).json({ success: false, error: error.message || error });
+    console.error("❌ PUT /:id error:", error);
+    return res.status(500).json({ success: false, error: error.message });
   }
 });
+
+// GET /api/products/by?showBy=feature|notFeature&catBy=priceAsc|priceDesc&page=1&limit=8
+router.get("/get/by", async (req, res) => {
+  try {
+    let { showBy, catBy, page = 1, limit = 2 } = req.query;
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    const filter = {};
+    const sortOption = {};
+
+    // Show By Feature
+    if (showBy === "feature") filter.isFeatured = true;
+    else if (showBy === "notFeature") filter.isFeatured = false;
+
+    // Sort By Price
+    if (catBy === "priceAsc") sortOption.price = 1;
+    else if (catBy === "priceDesc") sortOption.price = -1;
+    else sortOption.dateCreated = -1; // default
+
+    const totalResults = await Product.countDocuments(filter);
+    const totalPages = Math.ceil(totalResults / limit);
+
+    const productList = await Product.find(filter)
+      .populate("category")
+      .sort(sortOption)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.status(200).json({
+      success: true,
+      totalResults,
+      totalPages,
+      currentPage: page,
+      productList,
+    });
+  } catch (err) {
+    console.error("GET /products/by error:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+
+
 
 module.exports = router
