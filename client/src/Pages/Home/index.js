@@ -77,7 +77,7 @@ const Home = () => {
 
         <div className="bannerSec">
   <div className="banner">
-    <img src="https://img.freepik.com/free-vector/sale-banner-template_23-2148897322.jpg" alt="Sale" />
+    <img src="https://i.pinimg.com/736x/b9/9c/0a/b99c0a5a3471cfb95799bcfd1aa9e045.jpg" alt="Sale" />
     <div className="text">Big Sale - Up to 50% Off</div>
   </div>
 </div>
@@ -100,7 +100,7 @@ const Home = () => {
 
         <div className="bannerSec">
   <div className="banner">
-    <img src="https://img.freepik.com/free-vector/new-arrival-banner-template_1361-1754.jpg" alt="New Arrivals" />
+    <img src="https://i.pinimg.com/736x/82/68/a1/8268a1ce18a5185eeea0ba7a31afefeb.jpg" alt="New Arrivals" />
     <div className="text">New Arrivals - Fresh Styles</div>
   </div>
 </div>

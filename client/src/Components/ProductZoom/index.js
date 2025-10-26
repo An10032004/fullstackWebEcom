@@ -51,8 +51,8 @@ const ProductZoom = ({product}) => {
         <div className="item imgZoom" key={index}>
           <InnerImageZoom
             zoomType="hover"
-            zoomScale={2.5}
-            src={`http://localhost:4000/uploads/${img}`}
+            zoomScale={2}
+            src={`${img}`}
           />
         </div>
       ))}
@@ -66,7 +66,7 @@ const ProductZoom = ({product}) => {
           className={`item ${slideIndex === index ? 'item_active' : ''}`}
         >
           <img
-            src={`http://localhost:4000/uploads/${img}`}
+            src={`${img}`}
             className="w-100"
             alt={`thumbnail-${index}`}
             onClick={() => goto(index)}

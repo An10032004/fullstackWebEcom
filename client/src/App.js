@@ -46,19 +46,34 @@ function App() {
 
   const [searchData,setSearchData] = useState([])
 
-  const addToCart = (data) => {
+ const addToCart = (data) => {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  // 🧩 Kiểm tra đăng nhập
+  if (!user || !user.userId) {
+    showAlert("Please log in to add items to cart!", "warning");
+    return;
+  }
+
+  // 🧩 Kiểm tra dữ liệu hợp lệ
   if (!data || Object.keys(data).length === 0) {
     showAlert("Cart data is empty!", "error");
     return;
   }
 
-  postData(`/api/cart/add`, data)
+  // 🧩 Thêm thông tin userId vào body để backend biết
+  const body = {
+    ...data,
+    userId: user.userId,
+  };
+
+  postData(`/api/cart/add`, body)
     .then((res) => {
       if (res?.success) {
         showAlert("Added to cart successfully!", "success");
         setCartData((prev) => [...prev, res.cartList]);
-      }else if(res?.cart) {
-        showAlert("product already added", "warning");
+      } else if (res?.cart) {
+        showAlert("Product already added", "warning");
       } else {
         showAlert("Failed to add to cart", "error");
       }
@@ -68,6 +83,7 @@ function App() {
       showAlert("Server error", "error");
     });
 };
+
   useEffect(() =>{
     getCountry("https://open.oapi.vn/location/countries")
     fetchDataFromApi(`/api/cart`).then((res) => {
@@ -95,18 +111,32 @@ function App() {
 
     const [orderData,setOrderData] = useState([])
 
-    useEffect(() => {
-  fetchDataFromApi(`/api/order`).then((res) => {
-    console.log("Orders API response:", res);
-    if (Array.isArray(res)) {
-      setOrderData(res); // nếu API trả thẳng mảng
-    } else if (Array.isArray(res.orders)) {
-      setOrderData(res.orders); // nếu có field "orders"
-    } else {
-      setOrderData([]); // fallback an toàn
-    }
-  });
+  useEffect(() => {
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const email = storedUser?.email;
+
+  if (!email) {
+    console.warn("⚠️ No user email found, skipping order fetch");
+    setOrderData([]);
+    return;
+  }
+
+  // 🧩 Lấy đơn hàng theo email người dùng
+  fetchDataFromApi(`/api/order/byEmail/${email}`)
+    .then((res) => {
+      console.log("📦 Orders API response:", res);
+      if (res?.success && Array.isArray(res.orders)) {
+        setOrderData(res.orders);
+      } else {
+        setOrderData([]);
+      }
+    })
+    .catch((err) => {
+      console.error("❌ Error fetching user orders:", err);
+      setOrderData([]);
+    });
 }, []);
+
 
 useEffect(() => {
   fetchDataFromApi(`/api/cart`)

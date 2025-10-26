@@ -98,7 +98,7 @@ const WishList = () => {
                             <div className="d-flex align-items-center cartItemImgWrapper">
                               <div className="imgWrapper">
                                 <img
-                                  src={`http://localhost:4000/uploads/${item.image}`}
+                                  src={`${item.image}`}
                                   className="w-100"
                                   alt={item.productTitle}
                                 />

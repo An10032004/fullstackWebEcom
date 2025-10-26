@@ -22,8 +22,9 @@ const ProductItem = (props) => {
         })
     }
     useEffect(() => {
-    window.scrollTo(0,0)
+    
     fetchDataFromApi(`/api/products/${isOpenProductModal.id}`).then((res) => {
+        console.log(res)
         setProductData(res)
     })
     },[isOpenProductModal])
@@ -114,7 +115,7 @@ const ProductItem = (props) => {
                     <Link to={`/product/${props?.item?.id}`}>
                         {
                             
-                                <img src={`http://localhost:4000/uploads/${props.item?.images[0]}`} className="w-100" />
+                                <img src={props.item?.images[0]} className="w-100" />
                         }
                     
 

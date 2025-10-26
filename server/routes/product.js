@@ -127,43 +127,53 @@ router.get("/category/name/:catName", async (req, res) => {
   }
 });
 
+// routes/products.js
 router.get("/category/:categoryId", async (req, res) => {
   try {
-    // const page = parseInt(req.query.page) || 1;
-    // const perPage = 4;
+    const { min, max, categories, brands, q } = req.query;
 
-  const category = await Category.findById(req.params.categoryId); // 🔥 Dùng _id
+    // ✅ Kiểm tra category hợp lệ
+    const category = await Category.findById(req.params.categoryId);
     if (!category) {
-      return res.status(404).json({ success: false, message: "Category not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Category not found" });
     }
-    const { min, max, categories, brands } = req.query;
 
-    // const totalProducts = await Product.countDocuments({ category: category._id });
-    // const totalPages = Math.ceil(totalProducts / perPage);
-     let filter = { category: category._id };
+    // ✅ Bắt đầu filter
+    let filter = { category: category._id };
 
+    // ✅ Tìm kiếm theo từ khóa
+    if (q && q.trim() !== "") {
+      filter.name = { $regex: q, $options: "i" }; // không phân biệt hoa thường
+    }
+
+    // ✅ Lọc theo khoảng giá
     if (min && max) {
       filter.price = { $gte: parseInt(min), $lte: parseInt(max) };
     }
 
-    if (brands) {
-      filter.brand = { $in: brands.split(",") };
+    // ✅ Lọc theo danh sách category con (nếu có)
+    if (categories) {
+      const categoryIds = categories.split(",").map((id) => id.trim());
+      filter.category = { $in: categoryIds };
     }
 
-    
-    const productList = await Product.find(filter)
-      // .skip((page - 1) * perPage)
-      // .limit(perPage)
-      .populate("category");
+    // ✅ Lọc theo danh sách brand
+    if (brands) {
+      filter.brand = { $in: brands.split(",").map((b) => b.trim()) };
+    }
 
-    return res.status(200).json({
+    // ✅ Truy vấn dữ liệu
+    const productList = await Product.find(filter).populate("category");
+
+    res.status(200).json({
       success: true,
       productList,
-      // totalPages,
-      // page,
+      count: productList.length,
     });
   } catch (err) {
-    return res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

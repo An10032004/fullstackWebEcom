@@ -164,4 +164,23 @@ router.put("/:id/paymentStatus", async (req, res) => {
   }
 });
 
+// ===============================
+// GET /api/order/byEmail/:email → Lấy order theo email người dùng
+// ===============================
+router.get("/byEmail/:email", async (req, res) => {
+  try {
+    const userEmail = req.params.email;
+    if (!userEmail) {
+      return res.status(400).json({ success: false, message: "Email is required" });
+    }
+
+    const orders = await Order.find({ "customer.email": userEmail }).sort({ createdAt: -1 });
+    res.status(200).json({ success: true, orders });
+  } catch (err) {
+    console.error("Get orders by email error:", err);
+    res.status(500).json({ success: false, message: "Server error", error: err.message });
+  }
+});
+
+
 module.exports = router;

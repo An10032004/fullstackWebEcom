@@ -1,34 +1,43 @@
-import { Link } from 'react-router-dom';
-import Rating from '@mui/material/Rating';
-import { IoIosClose, IoMdCart } from 'react-icons/io';
-import QuantityBox from '../../Components/QuantityBox';
-import Button from '@mui/material/Button';
-import { fetchDataFromApi, editData, deleteData } from '../../utils/api';
-import { useEffect, useState, useMemo, useContext } from 'react';
-import { MyContext } from '../../App';
+import { Link, useNavigate } from "react-router-dom";
+import Rating from "@mui/material/Rating";
+import { IoIosClose, IoMdCart } from "react-icons/io";
+import QuantityBox from "../../Components/QuantityBox";
+import Button from "@mui/material/Button";
+import { fetchDataFromApi, editData, deleteData } from "../../utils/api";
+import { useEffect, useState, useMemo, useContext } from "react";
+import { MyContext } from "../../App";
 
 const Cart = () => {
-    const {setCartCount, setCartTotal,cartData,setCartData} = useContext(MyContext) 
-  // 🧭 Lấy dữ liệu cart từ API
-  
+  const { setCartCount, setCartTotal, cartList, setCartList } = useContext(MyContext);
+  const navigate = useNavigate();
 
-  // 🧮 Tính subtotal & total
+  // ✅ Lấy userId từ localStorage
+  const localUser = JSON.parse(localStorage.getItem("user"));
+  const localUserId = localUser?.userId || null;
+
+  // ✅ Nếu chưa đăng nhập → chuyển hướng login
+ 
+
+  // ✅ Lọc giỏ hàng chỉ hiển thị sản phẩm của user hiện tại
+  const filteredCart = localUserId
+    ? cartList.filter((item) => item.userId === localUserId)
+    : [];
+
+  // 🧮 Tính subtotal & total dựa trên filteredCart
   const subtotal = useMemo(() => {
-    return cartData.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  }, [cartData]);
+    return filteredCart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  }, [filteredCart]);
 
   const shippingCost = 0;
   const total = subtotal + shippingCost;
 
-  // 🧱 Hàm cập nhật số lượng
+  // 🧱 Cập nhật số lượng
   const handleQuantityChange = async (id, newQuantity) => {
-    setCartData((prev) =>
+    setCartList((prev) =>
       prev.map((item) =>
         item._id === id ? { ...item, quantity: newQuantity } : item
       )
     );
-
-    // Gửi request update DB
     try {
       await editData(`/api/cart/${id}`, { quantity: newQuantity });
     } catch (err) {
@@ -36,19 +45,21 @@ const Cart = () => {
     }
   };
 
-  // 🗑️ Hàm xóa sản phẩm
+  // 🗑️ Xóa sản phẩm
   const handleRemoveItem = async (id) => {
     try {
       await deleteData(`/api/cart/${id}`);
-      setCartData((prev) => prev.filter((item) => item._id !== id));
+      setCartList((prev) => prev.filter((item) => item._id !== id));
     } catch (err) {
       console.error("Error deleting cart item:", err);
     }
   };
- useEffect(() => {
-    if (cartData?.length > 0) {
-      const count = cartData.reduce((acc, item) => acc + item.quantity, 0);
-      const total = cartData.reduce(
+
+  // ✅ Cập nhật tổng giỏ hàng toàn cục
+  useEffect(() => {
+    if (filteredCart.length > 0) {
+      const count = filteredCart.reduce((acc, item) => acc + item.quantity, 0);
+      const total = filteredCart.reduce(
         (acc, item) => acc + item.price * item.quantity,
         0
       );
@@ -58,14 +69,15 @@ const Cart = () => {
       setCartCount(0);
       setCartTotal(0);
     }
-  }, [cartData, setCartCount, setCartTotal]);
+  }, [filteredCart, setCartCount, setCartTotal]);
+
   return (
     <section className="section cartPage">
       <div className="container-fluid">
         <h2 className="hd mb-0">Your Cart</h2>
         <p>
           There are{" "}
-          <b className="text-red">{cartData?.length || 0}</b> products in your cart
+          <b className="text-red">{filteredCart?.length || 0}</b> products in your cart
         </p>
 
         <div className="row">
@@ -83,15 +95,15 @@ const Cart = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {cartData && cartData.length > 0 ? (
-                    cartData.map((item) => (
+                  {filteredCart && filteredCart.length > 0 ? (
+                    filteredCart.map((item) => (
                       <tr key={item._id}>
                         <td width="45%">
                           <Link to={`/product/${item._id}`}>
                             <div className="d-flex align-items-center cartItemImgWrapper">
                               <div className="imgWrapper">
                                 <img
-                                  src={`http://localhost:4000/uploads/${item.image}`}
+                                  src={`${item.image}`}
                                   className="w-100"
                                   alt={item.name}
                                 />
@@ -140,7 +152,9 @@ const Cart = () => {
                   ) : (
                     <tr>
                       <td colSpan="5" className="text-center py-4">
-                        Your cart is empty
+                        {localUserId
+                          ? "Your cart is empty"
+                          : "Please log in to view your cart"}
                       </td>
                     </tr>
                   )}
@@ -175,9 +189,9 @@ const Cart = () => {
               </div>
               <br />
               <Link to={`/checkout`}>
-                  <Button className="cartBtn btn-blue bg-red btn-lg btn-big ">
-                <IoMdCart /> Check Out
-              </Button>
+                <Button className="cartBtn btn-blue bg-red btn-lg btn-big ">
+                  <IoMdCart /> Check Out
+                </Button>
               </Link>
             </div>
           </div>
